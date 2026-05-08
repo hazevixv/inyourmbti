@@ -1,0 +1,63 @@
+{
+  "name": "Haze MBTI - Temukan Kepribadian Sejatimu",
+  "short_name": "Haze MBTI",
+  "description": "Platform tes MBTI yang akurat dan modern dengan AI psychologist",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFF1F2",
+  "theme_color": "#EC4899",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "id",
+  "dir": "ltr",
+  "categories": ["lifestyle", "education", "health"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshot-mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Mulai Tes",
+      "short_name": "Tes",
+      "description": "Mulai tes MBTI sekarang",
+      "url": "/test",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Chat AI",
+      "short_name": "Chat",
+      "description": "Chat dengan AI psychologist",
+      "url": "/chat",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "prefer_related_applications": false
+}

@@ -1,0 +1,42 @@
+{
+  "name": "haze-mbti",
+  "version": "2.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 2002",
+    "dev:turbo": "next dev -p 2002 --turbo",
+    "dev:fast": "NODE_OPTIONS='--max-old-space-size=4096' next dev -p 2002",
+    "build": "next build",
+    "build:analyze": "ANALYZE=true next build",
+    "start": "next start -p 2002",
+    "lint": "next lint",
+    "clean": "rm -rf .next node_modules/.cache",
+    "clean:win": "if exist .next rmdir /s /q .next",
+    "fresh": "npm run clean:win && npm run dev",
+    "db:init": "tsx scripts/init-db.ts",
+    "db:setup": "npm run db:init"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.1.0",
+    "@vercel/kv": "^3.0.0",
+    "groq-sdk": "^0.8.0",
+    "lucide-react": "^0.469.0",
+    "next": "^15.1.6",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-markdown": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "autoprefixer": "^10.0.1",
+    "dotenv": "^17.4.2",
+    "eslint": "^9",
+    "eslint-config-next": "^15.1.6",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5"
+  }
+}

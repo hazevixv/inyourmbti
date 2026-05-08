@@ -1,0 +1,478 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 🎨 Design System V3 - Frosted Color Palette + Typography */
+/* Note: Full design system imported via design-system-v3.css in layout.tsx */
+
+@layer base {
+  :root {
+    /* ============================================
+       FROSTED COLOR PALETTE - Primary Brand Colors
+       ============================================ */
+    
+    /* Primary - Frosted Blues (Main brand colors) */
+    --frosted-900: #29353C;  /* Darkest - Headers, important text */
+    --frosted-800: #344250;  /* Dark - Body text */
+    --frosted-700: #44576D;  /* Medium dark - Secondary text */
+    --frosted-600: #5A6F84;  /* Medium - Muted text */
+    --frosted-500: #768A96;  /* Base - Borders, dividers */
+    --frosted-400: #92A5B3;  /* Light - Subtle elements */
+    --frosted-300: #AAC7D8;  /* Lighter - Backgrounds */
+    --frosted-200: #DFEBF6;  /* Very light - Soft backgrounds */
+    --frosted-100: #EFF5FA;  /* Lightest - Page backgrounds */
+    --frosted-50: #F7FAFC;   /* Ultra light - Subtle backgrounds */
+
+    /* Accent - Teal/Cyan (CTA, highlights) */
+    --accent-teal-900: #0D4F4F;
+    --accent-teal-800: #0F6969;
+    --accent-teal-700: #128383;
+    --accent-teal-600: #159D9D;
+    --accent-teal-500: #18B7B7;  /* Primary teal */
+    --accent-teal-400: #3DC5C5;
+    --accent-teal-300: #62D3D3;
+    --accent-teal-200: #87E1E1;
+    --accent-teal-100: #ACEFEF;
+    --accent-teal-50: #D6F7F7;
+
+    /* Accent - Sky Blue (Gradient, secondary) */
+    --accent-sky-900: #0C4A6E;
+    --accent-sky-800: #075985;
+    --accent-sky-700: #0369A1;
+    --accent-sky-600: #0284C7;
+    --accent-sky-500: #0EA5E9;  /* Primary sky */
+    --accent-sky-400: #38BDF8;
+    --accent-sky-300: #7DD3FC;
+    --accent-sky-200: #BAE6FD;
+    --accent-sky-100: #E0F2FE;
+    --accent-sky-50: #F0F9FF;
+
+    /* Neutrals - Gray scale */
+    --neutral-white: #FFFFFF;
+    --neutral-50: #F9FAFB;
+    --neutral-100: #F3F4F6;
+    --neutral-200: #E5E7EB;
+    --neutral-300: #D1D5DB;
+    --neutral-400: #9CA3AF;
+    --neutral-500: #6B7280;
+    --neutral-600: #4B5563;
+    --neutral-700: #374151;
+    --neutral-800: #1F2937;
+    --neutral-900: #111827;
+    --neutral-black: #000000;
+
+    /* Semantic Colors */
+    --success: #10B981;
+    --warning: #F59E0B;
+    --error: #EF4444;
+    --info: #3B82F6;
+    
+    /* ============================================
+       LEGACY COLORS - Kept for backward compatibility
+       Will be gradually phased out
+       ============================================ */
+    --sage-50: #F7F9F7;
+    --sage-100: #E8EDE8;
+    --sage-200: #D1DBD1;
+    --sage-300: #B5C4B5;
+    --sage-400: #8BA888;
+    --sage-500: #6B8E88;
+    --sage-600: #567A74;
+    --sage-700: #446660;
+    
+    --coral-50: #FEF7F5;
+    --coral-100: #FDEEE9;
+    --coral-200: #FBD9D0;
+    --coral-300: #F8BFB3;
+    --coral-400: #E8A598;
+    --coral-500: #D88B7D;
+    --coral-600: #C87162;
+    
+    --lavender-50: #F8F7FB;
+    --lavender-100: #F0EEF7;
+    --lavender-200: #DDD8EB;
+    --lavender-300: #C5BCDC;
+    --lavender-400: #A8B8D8;
+    --lavender-500: #8B9BC8;
+    --lavender-600: #6B7FB5;
+    
+    --navy-50: #F7F8F9;
+    --navy-100: #E8EAED;
+    --navy-200: #D1D5DB;
+    --navy-300: #9CA3AF;
+    --navy-400: #6B7280;
+    --navy-500: #4A5568;
+    --navy-600: #374151;
+    --navy-700: #1F2937;
+    --navy-800: #111827;
+    --navy-900: #0F172A;
+  }
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body), 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: var(--frosted-700);
+  background-color: var(--neutral-white);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* ============================================
+   GLASSMORPHISM & FROSTED GLASS EFFECTS
+   ============================================ */
+
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.glass-dark {
+  background: rgba(41, 53, 60, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--frosted-200);
+}
+
+.glass-frosted {
+  background: rgba(247, 250, 252, 0.8);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--frosted-200);
+  box-shadow: 0 4px 6px rgba(41, 53, 60, 0.05);
+}
+
+/* ============================================
+   BUTTON STYLES - Frosted Theme
+   ============================================ */
+
+.gradient-button {
+  background: linear-gradient(135deg, var(--accent-teal-500), var(--accent-sky-500));
+  transition: all 0.3s ease;
+}
+
+.gradient-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 30px rgba(24, 183, 183, 0.3);
+}
+
+.gradient-button:active {
+  transform: translateY(0);
+}
+
+/* Interactive button with ripple effect - Optimized */
+.interactive-button {
+  position: relative;
+  overflow: hidden;
+  will-change: transform;
+}
+
+.interactive-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.4s, height 0.4s;
+}
+
+.interactive-button:active::before {
+  width: 200px;
+  height: 200px;
+}
+
+/* ============================================
+   CUSTOM SCROLLBAR - Frosted Theme
+   ============================================ */
+
+/* Hide scrollbar but keep functionality */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--frosted-100);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, var(--accent-teal-500), var(--accent-sky-500));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, var(--accent-teal-600), var(--accent-sky-600));
+}
+
+/* Safe area for iOS */
+@supports (padding: max(0px)) {
+  body {
+    padding-left: max(0px, env(safe-area-inset-left));
+    padding-right: max(0px, env(safe-area-inset-right));
+  }
+}
+
+/* Animations - Optimized for performance */
+@keyframes slide-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(24, 183, 183, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(24, 183, 183, 0.4);
+  }
+}
+
+/* Utility classes */
+.animate-slide-in-up {
+  animation: slide-in-up 0.5s ease-out;
+  will-change: transform, opacity;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.3s ease-out;
+  will-change: transform, opacity;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+  will-change: box-shadow;
+}
+
+/* ============================================
+   UTILITY CLASSES - Frosted Theme
+   ============================================ */
+
+/* Text gradient */
+.text-gradient {
+  background: linear-gradient(135deg, var(--accent-teal-500), var(--accent-sky-500));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-frosted {
+  background: linear-gradient(135deg, var(--frosted-700), var(--frosted-500));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Progress bar animation - GPU accelerated */
+@keyframes progress-fill {
+  from {
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  to {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+}
+
+.progress-animated {
+  animation: progress-fill 0.8s ease-out;
+  will-change: transform;
+}
+
+/* Card hover effect - GPU accelerated */
+.card-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.card-hover:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(24, 183, 183, 0.15);
+}
+
+/* ============================================
+   LOADING & FOCUS STATES - Frosted Theme
+   ============================================ */
+
+/* Loading spinner */
+.spinner {
+  border: 3px solid var(--frosted-200);
+  border-top: 3px solid var(--accent-teal-500);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Focus styles */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--accent-teal-500);
+  outline-offset: 2px;
+}
+
+/* Disable tap highlight on mobile */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Selection color */
+::selection {
+  background: rgba(24, 183, 183, 0.2);
+  color: var(--frosted-900);
+}
+
+::-moz-selection {
+  background: rgba(24, 183, 183, 0.2);
+  color: var(--frosted-900);
+}
+
+
+/* ============================================
+   BACKGROUND ANIMATIONS - Scrolling Cards
+   ============================================ */
+
+@keyframes scroll-up {
+  0% {
+    transform: translateY(0) translateZ(0);
+  }
+  100% {
+    transform: translateY(-33.33%) translateZ(0);
+  }
+}
+
+@keyframes scroll-down {
+  0% {
+    transform: translateY(-33.33%) translateZ(0);
+  }
+  100% {
+    transform: translateY(0) translateZ(0);
+  }
+}
+
+/* Performance optimization - Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  @keyframes scroll-up,
+  @keyframes scroll-down {
+    0%, 100% {
+      transform: translateY(0) translateZ(0);
+    }
+  }
+}
+
+
+/* ============================================
+   GRADIENT ANIMATIONS - Chat Box Border
+   ============================================ */
+
+@keyframes gradient-xy {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-gradient-xy {
+  background-size: 200% 200%;
+  animation: gradient-xy 3s ease infinite;
+}
+
+
+/* Mobile Menu Slide Down Animation */
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-down {
+  animation: slide-down 0.2s ease-out;
+}
+
+/* Shimmer animation for CTA buttons */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+/* ── Celebration Splash Animations ── */
+@keyframes confettiFall {
+  0%   { transform: translateY(-20px) rotate(0deg);   opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+@keyframes splashIn {
+  0%   { opacity: 0; transform: scale(0.7) translateY(20px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
