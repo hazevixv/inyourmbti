@@ -48,3 +48,4 @@ next-env.d.ts
 scripts/
 app/chat/page.tsx.backup
 app/page-old-backup.tsx
+00-documentation
