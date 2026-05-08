@@ -1,6 +1,6 @@
 "use client";
 
-import { Brain, Clock, Target, CheckCircle, Sparkles, Zap, User, Heart, RefreshCw, BarChart2 } from 'lucide-react';
+import { Brain, Clock, Target, CheckCircle, Sparkles, Zap, User, Heart, RefreshCw, BarChart2, Activity } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { questions } from '@/lib/questions';
@@ -322,8 +322,8 @@ export default function TestStartPage() {
       setUserData(newUserData);  // ← update state immediately so card shows name/gender
       setShowForm(false);
 
-      // Navigate to test
-      const destination = userState === 'resume' ? `/test/${lastQuestionId}` : '/test/1';
+      // Resume users should continue the test; brand-new welcome submissions stay on the test start screen.
+      const destination = userState === 'resume' ? `/test/${lastQuestionId}` : '/test';
       router.push(destination);
     } catch {
       alert('Terjadi kesalahan. Silakan coba lagi.');
@@ -410,6 +410,14 @@ export default function TestStartPage() {
                   <Brain className="w-4 h-4" />
                   <span className="text-xl font-black">{completedResult.variant}</span>
                 </div>
+                {typeof completedResult.confidence === 'number' && (
+                  <div className="mb-2">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-[11px] font-semibold">
+                      <Activity className="w-3.5 h-3.5" />
+                      Confidence {completedResult.confidence}%
+                    </span>
+                  </div>
+                )}
                 <p className="text-xs text-navy-500 leading-relaxed">
                   {completedResult.description?.split(' - ')[1]?.split('.')[0] || 'Tipe kepribadianmu yang unik'}
                 </p>

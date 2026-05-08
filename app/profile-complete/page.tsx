@@ -118,19 +118,20 @@ export default function ProfileCompletePage() {
           mbtiType: mbtiResult?.type || null,
         })
       });
-      console.log('✅ Full profile saved to NeonDB');
     } catch (err) {
-      console.warn('⚠️ Profile DB save failed:', err);
+      console.warn('Profile DB save failed:', err);
     }
 
     // 3. Save test result to DB
     if (mbtiResult) {
       try {
+        const resultId = localStorage.getItem('mbti-result-id') || crypto.randomUUID();
+        localStorage.setItem('mbti-result-id', resultId);
         const rRes = await fetch('/api/results', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            id: crypto.randomUUID(),
+            id: resultId,
             userId,
             mbtiType: mbtiResult.type,
             variant: mbtiResult.variant,
@@ -145,14 +146,18 @@ export default function ProfileCompletePage() {
         if (rRes.ok) {
           localStorage.setItem('db-synced', 'true');
           localStorage.removeItem('db-save-queue');
-          console.log('✅ Test result saved to NeonDB');
         } else {
           throw new Error('result save failed');
         }
-      } catch (err) {
-        console.warn('⚠️ Queuing test result for retry');
+      } catch {
         const queue = JSON.parse(localStorage.getItem('db-save-queue') || '[]');
-        queue.push({ userId, result: mbtiResult, testDate: new Date().toISOString(), queuedAt: new Date().toISOString() });
+        queue.push({
+          resultId: localStorage.getItem('mbti-result-id'),
+          userId,
+          result: mbtiResult,
+          testDate: new Date().toISOString(),
+          queuedAt: new Date().toISOString()
+        });
         localStorage.setItem('db-save-queue', JSON.stringify(queue));
       }
     }

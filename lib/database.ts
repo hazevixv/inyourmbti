@@ -265,6 +265,16 @@ export async function saveTestResult(data: {
         ${data.tertiary_function}, ${data.inferior_function},
         ${data.test_date.toISOString()}, NOW()
       )
+      ON CONFLICT (id) DO UPDATE SET
+        user_id = EXCLUDED.user_id,
+        mbti_type = EXCLUDED.mbti_type,
+        variant = EXCLUDED.variant,
+        percentages = EXCLUDED.percentages,
+        dominant_function = EXCLUDED.dominant_function,
+        auxiliary_function = EXCLUDED.auxiliary_function,
+        tertiary_function = EXCLUDED.tertiary_function,
+        inferior_function = EXCLUDED.inferior_function,
+        test_date = EXCLUDED.test_date
       RETURNING *
     `;
     return (result as any)[0] as TestResult;

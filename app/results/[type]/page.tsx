@@ -3,8 +3,9 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { 
-  ChevronLeft, Share2, RotateCcw, MessageCircle, TrendingUp, Target,
+  ChevronLeft, RotateCcw, MessageCircle, TrendingUp, Target, Download,
   Brain, Heart, Briefcase, Users, Zap, Shield, AlertCircle, Star,
   BarChart3, PieChart, Activity, Award, BookOpen, Lightbulb, Sparkles,
   ArrowRight, CheckCircle, XCircle, TrendingDown, UserPlus, Smile, Frown
@@ -17,6 +18,69 @@ import { getTopCompatibleTypes } from '@/lib/compatibility';
 import { FunctionDetailModal, VariantDetailModal } from '@/components/FunctionDetailModal';
 import TopNav from '@/components/TopNav';
 
+const VALID_MBTI_TYPES = ['INTJ', 'INTP', 'ENTJ', 'ENTP', 'INFJ', 'INFP', 'ENFJ', 'ENFP', 'ISTJ', 'ISFJ', 'ESTJ', 'ESFJ', 'ISTP', 'ISFP', 'ESTP', 'ESFP'] as const;
+
+const VIEW_ONLY_STACKS: Record<string, [keyof MBTIResult['percentages'], keyof MBTIResult['percentages'], keyof MBTIResult['percentages'], keyof MBTIResult['percentages']]> = {
+  INTJ: ['Ni', 'Te', 'Fi', 'Se'],
+  INTP: ['Ti', 'Ne', 'Si', 'Fe'],
+  ENTJ: ['Te', 'Ni', 'Se', 'Fi'],
+  ENTP: ['Ne', 'Ti', 'Fe', 'Si'],
+  INFJ: ['Ni', 'Fe', 'Ti', 'Se'],
+  INFP: ['Fi', 'Ne', 'Si', 'Te'],
+  ENFJ: ['Fe', 'Ni', 'Se', 'Ti'],
+  ENFP: ['Ne', 'Fi', 'Te', 'Si'],
+  ISTJ: ['Si', 'Te', 'Fi', 'Ne'],
+  ISFJ: ['Si', 'Fe', 'Ti', 'Ne'],
+  ESTJ: ['Te', 'Si', 'Ne', 'Fi'],
+  ESFJ: ['Fe', 'Si', 'Ne', 'Ti'],
+  ISTP: ['Ti', 'Se', 'Ni', 'Fe'],
+  ISFP: ['Fi', 'Se', 'Ni', 'Te'],
+  ESTP: ['Se', 'Ti', 'Fe', 'Ni'],
+  ESFP: ['Se', 'Fi', 'Te', 'Ni'],
+};
+
+function createViewOnlyResult(typeCode: string, variantSuffix?: 'A' | 'T'): MBTIResult {
+  const normalizedType = typeCode.toUpperCase();
+  const stack = VIEW_ONLY_STACKS[normalizedType];
+  const percentages: MBTIResult['percentages'] = {
+    Ne: 42,
+    Ni: 42,
+    Se: 42,
+    Si: 42,
+    Te: 42,
+    Ti: 42,
+    Fe: 42,
+    Fi: 42,
+  };
+
+  if (stack) {
+    percentages[stack[0]] = 78;
+    percentages[stack[1]] = 67;
+    percentages[stack[2]] = 54;
+    percentages[stack[3]] = 38;
+  }
+
+  const typeData = getMBTITypeData(normalizedType);
+
+  return {
+    type: normalizedType,
+    variant: `${normalizedType}-${variantSuffix || 'A'}`,
+    dominantFunction: stack?.[0] || 'Ni',
+    auxiliaryFunction: stack?.[1] || 'Te',
+    tertiaryFunction: stack?.[2] || 'Fi',
+    inferiorFunction: stack?.[3] || 'Se',
+    scores: percentages,
+    percentages,
+    description: typeData?.description || normalizedType,
+    strengths: typeData?.strengths || [],
+    weaknesses: typeData?.weaknesses || [],
+    careers: typeData?.careers || [],
+    confidence: undefined,
+    confidenceLabel: undefined,
+    ambiguityNote: undefined,
+  };
+}
+
 export default function ComprehensiveResultsPage() {
   const params = useParams();
   const router = useRouter();
@@ -28,6 +92,8 @@ export default function ComprehensiveResultsPage() {
   const [enneagramTypes, setEnneagramTypes] = useState<ReturnType<typeof getEnneagramForMBTI>>([]);
   const [loveLanguage, setLoveLanguage] = useState<ReturnType<typeof getLoveLanguageForMBTI>>(null);
   const [compatibleTypes, setCompatibleTypes] = useState<ReturnType<typeof getTopCompatibleTypes>>([]);
+  const [userGender, setUserGender] = useState<'male' | 'female'>('male');
+  const [isViewOnly, setIsViewOnly] = useState(false);
   
   // Education modals state
   const [selectedFunction, setSelectedFunction] = useState<string | null>(null);
@@ -35,80 +101,64 @@ export default function ComprehensiveResultsPage() {
 
   useEffect(() => {
     const saved = localStorage.getItem('mbti-result');
-    if (saved) {
-      const parsed: MBTIResult = JSON.parse(saved);
-      // Normalize type - remove variant suffix if present (e.g., "INTJ-A" -> "INTJ")
-      const normalizedType = parsed.type.split('-')[0].toUpperCase();
-      const urlType = type.split('-')[0].toUpperCase();
-      
-      console.log('🔍 Debug - parsed.type:', parsed.type);
-      console.log('🔍 Debug - normalized:', normalizedType);
-      console.log('🔍 Debug - URL type:', urlType);
-      
-      // CRITICAL: Check if type is invalid (XXXX or not a valid MBTI type)
-      const validTypes = ['INTJ', 'INTP', 'ENTJ', 'ENTP', 'INFJ', 'INFP', 'ENFJ', 'ENFP', 
-                          'ISTJ', 'ISFJ', 'ESTJ', 'ESFJ', 'ISTP', 'ISFP', 'ESTP', 'ESFP'];
-      
-      if (!validTypes.includes(normalizedType) || normalizedType === 'XXXX') {
-        console.error('❌ CRITICAL: Invalid MBTI type detected:', normalizedType);
-        console.log('🔧 Attempting to recalculate from answers...');
-        
-        // Try to recalculate from saved answers
-        const savedAnswers = localStorage.getItem('mbti-answers');
-        if (savedAnswers) {
-          try {
-            const answers = JSON.parse(savedAnswers);
-            const { calculateMBTI } = require('@/lib/mbti-calculator');
-            const recalculated = calculateMBTI(answers);
-            
-            console.log('✅ Recalculated type:', recalculated.type);
-            
-            // Save recalculated result
-            localStorage.setItem('mbti-result', JSON.stringify(recalculated));
-            
-            // Redirect to correct results page
-            router.push(`/results/${recalculated.type}`);
-            return;
-          } catch (error) {
-            console.error('❌ Failed to recalculate:', error);
-            alert('Terjadi kesalahan dalam menghitung tipe MBTI. Silakan ulangi tes.');
-            router.push('/test');
-            return;
-          }
-        } else {
-          console.error('❌ No saved answers found');
-          alert('Data tes tidak ditemukan. Silakan ulangi tes.');
-          router.push('/test');
-          return;
-        }
-      }
-      
-      if (normalizedType === urlType) {
-        setResult(parsed);
-        // Load comprehensive data from database
-        const data = getMBTITypeData(normalizedType);
-        setTypeData(data);
-        
-        // Load advanced integrations with normalized type
-        const enneagram = getEnneagramForMBTI(normalizedType);
-        console.log('✅ Enneagram loaded:', enneagram.length, 'types', enneagram);
-        setEnneagramTypes(enneagram);
-        
-        const loveLang = getLoveLanguageForMBTI(normalizedType);
-        console.log('✅ Love Language loaded:', loveLang?.primary, loveLang);
-        setLoveLanguage(loveLang);
-        
-        const compatible = getTopCompatibleTypes(normalizedType, 5);
-        console.log('✅ Compatible Types loaded:', compatible.length, 'types', compatible);
-        setCompatibleTypes(compatible);
-        
-        console.log('🎉 All advanced features loaded successfully!');
-      } else {
-        router.push('/test');
-      }
-    } else {
-      router.push('/test');
+    const userData = localStorage.getItem('user-data');
+    const urlType = type.split('-')[0].toUpperCase();
+    const variantMatch = type.toUpperCase().match(/-(A|T)$/);
+    const requestedVariant = variantMatch?.[1] as 'A' | 'T' | undefined;
+    const data = getMBTITypeData(urlType);
+
+    if (userData) {
+      try {
+        const parsedUserData = JSON.parse(userData);
+        setUserGender(parsedUserData.gender === 'female' ? 'female' : 'male');
+      } catch {}
     }
+
+    if (!VALID_MBTI_TYPES.includes(urlType as typeof VALID_MBTI_TYPES[number]) || !data) {
+      router.push('/types');
+      return;
+    }
+
+    let activeResult: MBTIResult | null = null;
+    let personalResultMatched = false;
+
+    if (saved) {
+      try {
+        const parsed: MBTIResult = JSON.parse(saved);
+        const normalizedType = parsed.type.split('-')[0].toUpperCase();
+
+        if (!VALID_MBTI_TYPES.includes(normalizedType as typeof VALID_MBTI_TYPES[number]) || normalizedType === 'XXXX') {
+          const savedAnswers = localStorage.getItem('mbti-answers');
+          if (savedAnswers) {
+            try {
+              const answers = JSON.parse(savedAnswers);
+              const { calculateMBTI } = require('@/lib/mbti-calculator');
+              const recalculated = calculateMBTI(answers);
+              localStorage.setItem('mbti-result', JSON.stringify(recalculated));
+
+              if (recalculated.type.split('-')[0].toUpperCase() === urlType) {
+                activeResult = recalculated;
+                personalResultMatched = true;
+              }
+            } catch {}
+          }
+        } else if (normalizedType === urlType) {
+          activeResult = parsed;
+          personalResultMatched = true;
+        }
+      } catch {}
+    }
+
+    if (!activeResult) {
+      activeResult = createViewOnlyResult(urlType, requestedVariant);
+    }
+
+    setIsViewOnly(!personalResultMatched);
+    setResult(activeResult);
+    setTypeData(data);
+    setEnneagramTypes(getEnneagramForMBTI(urlType));
+    setLoveLanguage(getLoveLanguageForMBTI(urlType));
+    setCompatibleTypes(getTopCompatibleTypes(urlType, 5));
   }, [type, router]);
 
   // ── Retry queue: process any failed DB saves from previous sessions ────────
@@ -117,7 +167,7 @@ export default function ComprehensiveResultsPage() {
       const queueRaw = localStorage.getItem('db-save-queue');
       if (!queueRaw) return;
 
-      let queue: Array<{ userId: string; result: MBTIResult; testDate: string; queuedAt: string }>;
+      let queue: Array<{ resultId?: string; userId: string; result: MBTIResult; testDate: string; queuedAt: string }>;
       try {
         queue = JSON.parse(queueRaw);
       } catch {
@@ -126,8 +176,6 @@ export default function ComprehensiveResultsPage() {
       }
 
       if (queue.length === 0) return;
-      console.log(`🔄 Retrying ${queue.length} queued DB saves...`);
-
       const remaining = [];
       for (const item of queue) {
         try {
@@ -152,7 +200,7 @@ export default function ComprehensiveResultsPage() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              id: crypto.randomUUID(),
+              id: item.resultId || localStorage.getItem('mbti-result-id') || crypto.randomUUID(),
               userId: item.userId,
               mbtiType: item.result.type,
               variant: item.result.variant,
@@ -165,10 +213,8 @@ export default function ComprehensiveResultsPage() {
             })
           });
           if (!rRes.ok) throw new Error('result save failed');
-
-          console.log('✅ Retry succeeded for queued item');
         } catch (err) {
-          console.warn('⚠️ Retry still failed, keeping in queue:', err);
+          console.warn('Retry still failed, keeping in queue:', err);
           remaining.push(item);
         }
       }
@@ -176,7 +222,6 @@ export default function ComprehensiveResultsPage() {
       if (remaining.length === 0) {
         localStorage.removeItem('db-save-queue');
         localStorage.setItem('db-synced', 'true');
-        console.log('✅ All queued saves processed successfully');
       } else {
         localStorage.setItem('db-save-queue', JSON.stringify(remaining));
       }
@@ -187,31 +232,18 @@ export default function ComprehensiveResultsPage() {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleShare = async () => {
-    if (!result) return;
-    const shareData = {
-      title: `Saya ${result.variant}!`,
-      text: `Saya baru saja menyelesaikan tes MBTI di Haze MBTI dan hasilnya ${result.variant}!`,
-      url: window.location.href,
-    };
-    try {
-      if (navigator.share) {
-        await navigator.share(shareData);
-      } else {
-        await navigator.clipboard.writeText(`${shareData.text}\n\n${shareData.url}`);
-        alert('Link berhasil disalin!');
-      }
-    } catch (error) {
-      console.error('Error sharing:', error);
-    }
-  };
-
   const handleRetake = () => {
     if (confirm('Apakah kamu yakin ingin mengulang tes?')) {
       localStorage.removeItem('mbti-answers');
       localStorage.removeItem('mbti-result');
       localStorage.removeItem('mbti-test-date');
       router.push('/test/1');
+    }
+  };
+
+  const handleDownloadPdf = () => {
+    if (typeof window !== 'undefined') {
+      window.print();
     }
   };
 
@@ -272,6 +304,13 @@ export default function ComprehensiveResultsPage() {
     { id: 'relationships', label: 'Relationships', icon: Heart },
   ];
 
+  const characterSrc = `/img/png-character/${result.type}-${userGender === 'female' ? 'Female' : 'Male'}.avif`;
+  const confidenceTone = result.confidenceLabel === 'high'
+    ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+    : result.confidenceLabel === 'medium'
+    ? 'bg-amber-50 text-amber-700 border-amber-200'
+    : 'bg-rose-50 text-rose-700 border-rose-200';
+
   return (
     <main className="min-h-screen pt-20">
       {/* Navigation */}
@@ -290,17 +329,19 @@ export default function ComprehensiveResultsPage() {
             </Link>
             <div className="flex items-center gap-2">
               <button
-                onClick={handleShare}
+                onClick={() => router.push(isViewOnly ? '/test' : '/chat')}
                 className="p-2 rounded-xl glass hover:scale-105 transition-transform"
               >
-                <Share2 className="w-5 h-5 text-navy-600" />
+                <MessageCircle className="w-5 h-5 text-navy-600" />
               </button>
-              <button
-                onClick={handleRetake}
-                className="p-2 rounded-xl glass hover:scale-105 transition-transform"
-              >
-                <RotateCcw className="w-5 h-5 text-navy-600" />
-              </button>
+              {!isViewOnly && (
+                <button
+                  onClick={handleRetake}
+                  className="p-2 rounded-xl glass hover:scale-105 transition-transform"
+                >
+                  <RotateCcw className="w-5 h-5 text-navy-600" />
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -310,63 +351,199 @@ export default function ComprehensiveResultsPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto space-y-6">
           
-          {/* Hero Card - Type Badge */}
-          <div className="glass rounded-3xl p-8 text-center animate-scale-in relative overflow-hidden">
-            {/* Background Pattern */}
+          <section className="glass rounded-[2rem] md:rounded-[2.5rem] p-4 md:p-4 lg:p-5 relative overflow-hidden shadow-xl animate-scale-in">
             <div className="absolute inset-0 opacity-5">
-              <div className="absolute inset-0" style={{
-                backgroundImage: 'radial-gradient(circle, #0EA5E9 1px, transparent 1px)',
-                backgroundSize: '30px 30px'
-              }} />
+              <div
+                className="absolute inset-0"
+                style={{
+                  backgroundImage: 'radial-gradient(circle, #0EA5E9 1px, transparent 1px)',
+                  backgroundSize: '28px 28px',
+                }}
+              />
             </div>
-            
-            <div className="relative z-10">
-              <div className="inline-block px-8 py-4 rounded-2xl bg-gradient-to-br from-sky-400 to-teal-400 text-white font-black text-4xl md:text-5xl mb-4 shadow-xl">
-                {result.variant}
+            <div className="absolute -top-20 -right-20 h-56 w-56 rounded-full bg-sky-200/30 blur-3xl" />
+            <div className="absolute -bottom-24 -left-16 h-56 w-56 rounded-full bg-teal-200/30 blur-3xl" />
+
+            <div className="relative z-10 grid gap-4 lg:gap-4 lg:grid-cols-[286px_minmax(0,1fr)] xl:grid-cols-[300px_minmax(0,1fr)] items-start">
+              <div className="rounded-[1.75rem] overflow-hidden bg-white/75 border border-white/70 shadow-lg self-start">
+                <div className="relative overflow-hidden min-h-[320px] sm:min-h-[380px] lg:min-h-[408px] bg-gradient-to-b from-sky-200 via-sky-100 to-white">
+                  <div
+                    className="absolute inset-0 opacity-10"
+                    style={{
+                      backgroundImage: 'radial-gradient(circle, #ffffff 1px, transparent 1px)',
+                      backgroundSize: '22px 22px',
+                    }}
+                  />
+                  <div className="absolute inset-0">
+                    <Image
+                      src={characterSrc}
+                      alt={`${result.type} character`}
+                      fill
+                      className="object-cover object-[center_12%] scale-[1.26] sm:scale-[1.31] lg:scale-[1.34]"
+                      priority
+                      sizes="(max-width: 1024px) 100vw, 300px"
+                    />
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-white via-white/35 to-transparent" />
+
+                  <div className="absolute left-4 right-4 top-4 flex items-start justify-between gap-3">
+                    <div className="px-3 py-1.5 rounded-full bg-white/85 backdrop-blur-sm text-xs font-semibold text-navy-700 shadow">
+                      {userGender === 'female' ? 'Wanita' : 'Pria'}
+                    </div>
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-sky-400 to-teal-400 text-white text-xs font-black shadow-lg">
+                      <Brain className="w-3 h-3" />
+                      {result.variant}
+                    </div>
+                  </div>
+
+                  <div className="absolute inset-x-0 bottom-0 p-3">
+                    <div className="rounded-[1.5rem] bg-white/88 backdrop-blur-md border border-white/80 p-3.5 shadow-xl">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-sky-400 to-teal-400 flex items-center justify-center shadow-lg flex-shrink-0">
+                          <span className="text-white font-black">{result.type[0]}</span>
+                        </div>
+                        <div className="min-w-0">
+                          <div className="font-bold text-navy-900 text-base leading-tight">{result.variant}</div>
+                          <div className="text-xs text-navy-500 truncate">{typeData?.nickname || result.type}</div>
+                        </div>
+                      </div>
+
+                      {isViewOnly ? (
+                        <div className="mt-3 rounded-full border border-sky-200 bg-sky-50/90 px-3 py-1.5 text-xs font-semibold text-sky-700 inline-flex">
+                          Preview tipe untuk dibaca
+                        </div>
+                      ) : typeof result.confidence === 'number' && (
+                        <div className="mt-2.5">
+                          <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-semibold ${confidenceTone}`}>
+                            <Activity className="w-3.5 h-3.5" />
+                            Confidence {result.confidence}%
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
-              
-              {typeData && (
-                <div className="inline-block px-4 py-2 rounded-full bg-navy-100 text-navy-700 font-bold text-sm mb-4">
-                  {typeData.nickname}
+
+              <div className="flex flex-col justify-center">
+                <div className="rounded-[1.75rem] bg-white/72 border border-white/70 p-4 sm:p-5 lg:p-6 shadow-lg min-h-full">
+                  <div className="flex flex-col gap-5">
+                    <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
+                      <div className="flex flex-wrap items-center gap-3">
+                        <div className="inline-flex px-4 py-2 rounded-2xl bg-gradient-to-br from-sky-400 to-teal-400 text-white font-black text-2xl md:text-[1.7rem] shadow-xl">
+                          {result.variant}
+                        </div>
+                        {typeData && (
+                          <div className="inline-flex px-4 py-2 rounded-full bg-navy-100 text-navy-700 font-bold text-sm">
+                            {typeData.nickname}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="hidden md:flex flex-wrap items-center gap-2 xl:justify-end">
+                        <button
+                          onClick={() => {
+                            if (isViewOnly) {
+                              router.push('/test');
+                              return;
+                            }
+                            handleChatWithContext('Saya ingin mendapatkan insight personal dari hasil MBTI saya sebagai ' + result.type);
+                          }}
+                          className="inline-flex h-11 items-center justify-center gap-2 px-4 rounded-2xl bg-gradient-to-r from-sky-400 to-teal-400 text-white hover:scale-[1.02] transition-transform font-semibold shadow-lg text-sm whitespace-nowrap"
+                        >
+                          <MessageCircle className="w-4 h-4" />
+                          {isViewOnly ? 'Ikut Tes MBTI' : 'AI Psychologist'}
+                        </button>
+                        {!isViewOnly && (
+                          <button
+                            onClick={handleDownloadPdf}
+                            className="inline-flex h-11 items-center justify-center gap-2 px-4 rounded-2xl glass hover:scale-[1.02] transition-transform text-navy-700 font-semibold text-sm whitespace-nowrap"
+                          >
+                            <Download className="w-4 h-4" />
+                            PDF
+                          </button>
+                        )}
+                        {!isViewOnly && (
+                          <button
+                            onClick={handleRetake}
+                            className="inline-flex h-11 items-center justify-center gap-2 px-4 rounded-2xl glass hover:scale-[1.02] transition-transform text-navy-700 font-semibold text-sm whitespace-nowrap"
+                          >
+                            <RotateCcw className="w-4 h-4" />
+                            Ulangi
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="max-w-4xl space-y-4">
+                      <p className="text-sm font-semibold uppercase tracking-[0.2em] text-sky-600/80">
+                        Hasil Tes Kepribadianmu
+                      </p>
+
+                      <h1 className="text-[2rem] md:text-[2.45rem] lg:text-[2.65rem] font-bold text-navy-800 leading-[1.08] max-w-3xl">
+                        {typeData?.description || result.description.split(' - ')[1]?.split('.')[0] || result.type}
+                      </h1>
+
+                      <p className="text-navy-600 leading-relaxed text-base md:text-[1.075rem] max-w-3xl">
+                        {typeData?.overview || result.description}
+                      </p>
+
+                      {isViewOnly && (
+                        <div className="rounded-2xl bg-sky-50 border border-sky-200 px-4 py-3 text-sm text-sky-800">
+                          Ini adalah preview tipe <strong>{result.type}</strong>. Hasil personalmu sendiri akan tetap aman di browser kamu dan baru muncul setelah kamu menyelesaikan tes.
+                        </div>
+                      )}
+
+                      {result.ambiguityNote && (
+                          <div className="rounded-2xl bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800">
+                            {result.ambiguityNote}
+                          </div>
+                        )}
+                    </div>
+                  </div>
+
+                  <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-2.5 md:hidden">
+                    <button
+                      onClick={() => {
+                        if (isViewOnly) {
+                          router.push('/test');
+                          return;
+                        }
+                        handleChatWithContext('Saya ingin mendapatkan insight personal dari hasil MBTI saya sebagai ' + result.type);
+                      }}
+                      className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-sky-400 to-teal-400 text-white font-semibold shadow-lg text-sm"
+                    >
+                      <MessageCircle className="w-4 h-4" />
+                      {isViewOnly ? 'Ikut Tes MBTI' : 'AI Psychologist'}
+                    </button>
+                    {!isViewOnly && (
+                      <button
+                        onClick={handleDownloadPdf}
+                        className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl glass text-navy-700 font-semibold text-sm"
+                      >
+                        <Download className="w-4 h-4" />
+                        PDF
+                      </button>
+                    )}
+                    {!isViewOnly && (
+                      <button
+                        onClick={handleRetake}
+                        className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl glass text-navy-700 font-semibold text-sm"
+                      >
+                        <RotateCcw className="w-4 h-4" />
+                        Ulangi
+                      </button>
+                    )}
+                  </div>
                 </div>
-              )}
-              
-              <h1 className="text-2xl md:text-3xl font-bold text-navy-800 mb-3">
-                {typeData?.description || result.description.split(' - ')[1]?.split('.')[0] || result.type}
-              </h1>
-              
-              <p className="text-navy-600 max-w-2xl mx-auto leading-relaxed mb-6">
-                {typeData?.overview || result.description}
-              </p>
-              
-              {/* Quick Stats */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
-                <div className="glass rounded-xl p-4">
-                  <div className="text-2xl font-black text-sky-500">{result.percentages[result.dominantFunction as keyof typeof result.percentages]}%</div>
-                  <div className="text-xs text-navy-600 mt-1">Dominant</div>
-                  <div className="text-sm font-bold text-navy-700">{result.dominantFunction}</div>
-                </div>
-                <div className="glass rounded-xl p-4">
-                  <div className="text-2xl font-black text-teal-500">{result.percentages[result.auxiliaryFunction as keyof typeof result.percentages]}%</div>
-                  <div className="text-xs text-navy-600 mt-1">Auxiliary</div>
-                  <div className="text-sm font-bold text-navy-700">{result.auxiliaryFunction}</div>
-                </div>
-                <div className="glass rounded-xl p-4">
-                  <div className="text-2xl font-black text-navy-400">{result.percentages[result.tertiaryFunction as keyof typeof result.percentages]}%</div>
-                  <div className="text-xs text-navy-600 mt-1">Tertiary</div>
-                  <div className="text-sm font-bold text-navy-700">{result.tertiaryFunction}</div>
-                </div>
-                <div className="glass rounded-xl p-4">
-                  <div className="text-2xl font-black text-beige-400">{result.percentages[result.inferiorFunction as keyof typeof result.percentages]}%</div>
-                  <div className="text-xs text-navy-600 mt-1">Inferior</div>
-                  <div className="text-sm font-bold text-navy-700">{result.inferiorFunction}</div>
-                </div>
+
               </div>
             </div>
-          </div>
+          </section>
 
           {/* Tabs Navigation */}
-          <div className="glass rounded-2xl p-2 overflow-x-auto">
+          <div className="sticky top-[4.75rem] md:top-24 z-20">
+            <div className="glass-dark rounded-[1.75rem] p-2.5 shadow-lg backdrop-blur-xl overflow-x-auto">
             <div className="flex md:grid md:grid-cols-7 gap-2 min-w-max md:min-w-0">
               {tabs.map((tab) => (
                 <button
@@ -382,6 +559,7 @@ export default function ComprehensiveResultsPage() {
                   <span className="text-xs">{tab.label}</span>
                 </button>
               ))}
+            </div>
             </div>
           </div>
 
@@ -595,84 +773,6 @@ export default function ComprehensiveResultsPage() {
                 </div>
               )}
 
-              {/* Pelajari Lebih Dalam - Education Section */}
-              <div className="glass rounded-3xl p-6 bg-gradient-to-br from-indigo-50 to-purple-50">
-                <h2 className="text-xl font-bold text-navy-800 mb-4 flex items-center gap-2">
-                  <BookOpen className="w-6 h-6 text-indigo-500" />
-                  Pelajari Lebih Dalam
-                </h2>
-                <p className="text-navy-600 mb-6 text-sm">
-                  Klik untuk memahami secara detail tentang tipe kepribadian dan cognitive functions yang kamu miliki.
-                </p>
-
-                {/* Variant Explanation */}
-                <div className="mb-6">
-                  <h3 className="font-bold text-navy-700 mb-3 text-sm">Apa itu {result.variant.split('-')[1]}?</h3>
-                  <button
-                    onClick={() => setShowVariantModal(true)}
-                    className="w-full p-4 rounded-xl bg-white hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 transition-all border-2 border-purple-200 hover:border-purple-300 group"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center">
-                          <span className="text-white font-black text-sm">-{result.variant.split('-')[1]}</span>
-                        </div>
-                        <div className="text-left">
-                          <div className="font-bold text-navy-800">
-                            {result.variant.split('-')[1] === 'A' ? 'Assertive' : 'Turbulent'}
-                          </div>
-                          <div className="text-xs text-navy-600">
-                            Pelajari karakteristik variant kamu
-                          </div>
-                        </div>
-                      </div>
-                      <ArrowRight className="w-5 h-5 text-purple-500 group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  </button>
-                </div>
-
-                {/* Cognitive Functions Explanation */}
-                <div>
-                  <h3 className="font-bold text-navy-700 mb-3 text-sm">Cognitive Functions Kamu</h3>
-                  <div className="grid md:grid-cols-2 gap-3">
-                    {[
-                      { func: result.dominantFunction, role: 'Dominant', color: 'from-sky-400 to-sky-500', bgColor: 'from-sky-50 to-sky-100', borderColor: 'border-sky-200 hover:border-sky-300' },
-                      { func: result.auxiliaryFunction, role: 'Auxiliary', color: 'from-teal-400 to-teal-500', bgColor: 'from-teal-50 to-teal-100', borderColor: 'border-teal-200 hover:border-teal-300' },
-                      { func: result.tertiaryFunction, role: 'Tertiary', color: 'from-navy-400 to-navy-500', bgColor: 'from-navy-50 to-navy-100', borderColor: 'border-navy-200 hover:border-navy-300' },
-                      { func: result.inferiorFunction, role: 'Inferior', color: 'from-beige-400 to-beige-500', bgColor: 'from-beige-50 to-beige-100', borderColor: 'border-beige-200 hover:border-beige-300' },
-                    ].map((item, index) => (
-                      <button
-                        key={index}
-                        onClick={() => setSelectedFunction(item.func)}
-                        className={`p-4 rounded-xl bg-white hover:bg-gradient-to-r hover:${item.bgColor} transition-all border-2 ${item.borderColor} group`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${item.color} flex items-center justify-center`}>
-                              <span className="text-white font-black text-sm">{item.func}</span>
-                            </div>
-                            <div className="text-left">
-                              <div className="font-bold text-navy-800 text-sm">{item.func}</div>
-                              <div className="text-xs text-navy-600">{item.role} Function</div>
-                            </div>
-                          </div>
-                          <ArrowRight className="w-4 h-4 text-navy-400 group-hover:translate-x-1 transition-transform" />
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="mt-6 p-4 rounded-xl bg-white border-2 border-indigo-200">
-                  <div className="flex items-start gap-3">
-                    <Lightbulb className="w-5 h-5 text-indigo-500 mt-0.5 flex-shrink-0" />
-                    <div className="text-xs text-navy-600 leading-relaxed">
-                      <strong className="text-navy-800">Pro Tip:</strong> Memahami cognitive functions kamu akan membantu kamu mengerti kenapa kamu berpikir dan bertindak dengan cara tertentu. Ini adalah kunci untuk personal growth!
-                    </div>
-                  </div>
-                </div>
-              </div>
-
               {/* CTA to AI Psychologist */}
               <div className="glass rounded-2xl p-6 bg-gradient-to-br from-sky-50 to-teal-50">
                 <div className="flex items-start gap-4">
@@ -698,7 +798,83 @@ export default function ComprehensiveResultsPage() {
           )}
 
           {activeTab === 'functions' && (
-            <div className="glass rounded-3xl p-6">
+            <div className="space-y-6">
+              <div className="glass rounded-3xl p-6 bg-gradient-to-br from-indigo-50 to-purple-50">
+                <h2 className="text-xl font-bold text-navy-800 mb-4 flex items-center gap-2">
+                  <BookOpen className="w-6 h-6 text-indigo-500" />
+                  Pelajari Lebih Dalam
+                </h2>
+                <p className="text-navy-600 mb-6 text-sm">
+                  Klik untuk memahami lebih detail tentang variant dan cognitive functions yang membentuk hasilmu.
+                </p>
+
+                <div className="mb-6">
+                  <h3 className="font-bold text-navy-700 mb-3 text-sm">Apa itu {result.variant.split('-')[1]}?</h3>
+                  <button
+                    onClick={() => setShowVariantModal(true)}
+                    className="w-full p-4 rounded-xl bg-white hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 transition-all border-2 border-purple-200 hover:border-purple-300 group"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center">
+                          <span className="text-white font-black text-sm">-{result.variant.split('-')[1]}</span>
+                        </div>
+                        <div className="text-left">
+                          <div className="font-bold text-navy-800">
+                            {result.variant.split('-')[1] === 'A' ? 'Assertive' : 'Turbulent'}
+                          </div>
+                          <div className="text-xs text-navy-600">
+                            Pelajari karakteristik variant kamu
+                          </div>
+                        </div>
+                      </div>
+                      <ArrowRight className="w-5 h-5 text-purple-500 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </button>
+                </div>
+
+                <div>
+                  <h3 className="font-bold text-navy-700 mb-3 text-sm">Cognitive Functions Kamu</h3>
+                  <div className="grid md:grid-cols-2 gap-3">
+                    {[
+                      { func: result.dominantFunction, role: 'Dominant', color: 'from-sky-400 to-sky-500', bgTone: 'hover:from-sky-50 hover:to-sky-100', borderColor: 'border-sky-200 hover:border-sky-300' },
+                      { func: result.auxiliaryFunction, role: 'Auxiliary', color: 'from-teal-400 to-teal-500', bgTone: 'hover:from-teal-50 hover:to-teal-100', borderColor: 'border-teal-200 hover:border-teal-300' },
+                      { func: result.tertiaryFunction, role: 'Tertiary', color: 'from-navy-400 to-navy-500', bgTone: 'hover:from-navy-50 hover:to-navy-100', borderColor: 'border-navy-200 hover:border-navy-300' },
+                      { func: result.inferiorFunction, role: 'Inferior', color: 'from-beige-400 to-beige-500', bgTone: 'hover:from-beige-50 hover:to-beige-100', borderColor: 'border-beige-200 hover:border-beige-300' },
+                    ].map((item, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setSelectedFunction(item.func)}
+                        className={`p-4 rounded-xl bg-white hover:bg-gradient-to-r ${item.bgTone} transition-all border-2 ${item.borderColor} group`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${item.color} flex items-center justify-center`}>
+                              <span className="text-white font-black text-sm">{item.func}</span>
+                            </div>
+                            <div className="text-left">
+                              <div className="font-bold text-navy-800 text-sm">{item.func}</div>
+                              <div className="text-xs text-navy-600">{item.role} Function</div>
+                            </div>
+                          </div>
+                          <ArrowRight className="w-4 h-4 text-navy-400 group-hover:translate-x-1 transition-transform" />
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mt-6 p-4 rounded-xl bg-white border-2 border-indigo-200">
+                  <div className="flex items-start gap-3">
+                    <Lightbulb className="w-5 h-5 text-indigo-500 mt-0.5 flex-shrink-0" />
+                    <div className="text-xs text-navy-600 leading-relaxed">
+                      <strong className="text-navy-800">Pro Tip:</strong> Memahami cognitive functions kamu akan membantu kamu mengerti kenapa kamu berpikir dan bertindak dengan cara tertentu. Ini adalah kunci untuk personal growth.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="glass rounded-3xl p-6">
               <h2 className="text-xl font-bold text-navy-800 mb-6">All Cognitive Functions</h2>
               <div className="grid md:grid-cols-2 gap-4">
                 {Object.entries(result.percentages).map(([func, score]) => (
@@ -727,6 +903,7 @@ export default function ComprehensiveResultsPage() {
                   </div>
                 ))}
               </div>
+            </div>
             </div>
           )}
 
@@ -1476,23 +1653,6 @@ export default function ComprehensiveResultsPage() {
             </div>
           )}
 
-          {/* Action Buttons */}
-          <div className="grid md:grid-cols-2 gap-4">
-            <Link
-              href="/chat"
-              className="flex items-center justify-center gap-3 px-8 py-4 rounded-2xl bg-gradient-to-br from-sky-400 to-teal-400 text-white font-bold text-lg shadow-xl hover:shadow-2xl transition-all hover:scale-105"
-            >
-              <MessageCircle className="w-6 h-6" />
-              Chat dengan AI Psychologist
-            </Link>
-            <button
-              onClick={handleShare}
-              className="flex items-center justify-center gap-3 px-8 py-4 rounded-2xl glass font-bold text-lg hover:scale-105 transition-all text-navy-700"
-            >
-              <Share2 className="w-6 h-6" />
-              Share Results
-            </button>
-          </div>
         </div>
       </div>
 

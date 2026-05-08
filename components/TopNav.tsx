@@ -1,7 +1,8 @@
 "use client";
 
 import { useRouter, usePathname } from 'next/navigation';
-import { Sparkles, Menu, X } from 'lucide-react';
+import Image from 'next/image';
+import { Menu, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function TopNav() {
@@ -47,14 +48,18 @@ export default function TopNav() {
           {/* Logo */}
           <button
             onClick={() => router.push('/')}
-            className="flex items-center gap-2.5 hover:opacity-80 transition-opacity flex-shrink-0"
+            className="flex items-center hover:opacity-80 transition-opacity flex-shrink-0"
+            aria-label="Ke halaman utama inyourmbti"
           >
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-teal-400 to-sky-400 flex items-center justify-center shadow-lg">
-              <Sparkles className="w-4 h-4 text-white" />
-            </div>
-            <span className="font-display font-bold text-lg text-frosted-900 tracking-tight">
-              inyourmbti
-            </span>
+            <Image
+              src="/logo-mbti.avif"
+              alt="inyourmbti"
+              width={148}
+              height={34}
+              priority
+              className="h-8 md:h-9 w-auto object-contain"
+              sizes="148px"
+            />
           </button>
 
           {/* Desktop menu */}

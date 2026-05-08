@@ -180,10 +180,8 @@ export default function QuestionPage() {
       
       // Only set selectedAnswer if it's a valid number between 1-5
       if (typeof savedAnswer === 'number' && savedAnswer >= 1 && savedAnswer <= 5) {
-        console.log(`Question ${questionId}: Loading saved answer ${savedAnswer}`);
         setSelectedAnswer(savedAnswer);
       } else {
-        console.log(`Question ${questionId}: No saved answer found`);
         setSelectedAnswer(null);
       }
     } catch (error) {
@@ -231,7 +229,8 @@ export default function QuestionPage() {
       // ── STEP 2: Save to localStorage FIRST (always succeeds) ─────────────
       localStorage.setItem('mbti-result', JSON.stringify(result));
       localStorage.setItem('mbti-test-date', new Date().toISOString());
-      console.log('✅ Result saved to localStorage (primary backup)');
+      const resultId = crypto.randomUUID();
+      localStorage.setItem('mbti-result-id', resultId);
 
       // ── STEP 3: Ensure userId exists ──────────────────────────────────────
       let userId = localStorage.getItem('user-id');
@@ -245,11 +244,11 @@ export default function QuestionPage() {
       router.push('/profile-complete');
 
       // Save to DB after redirect (fire-and-forget with retry queue)
-      saveToDatabase(userId, result).catch((err) => {
-        console.warn('⚠️ DB save failed, queued for retry:', err);
+      saveToDatabase(userId, result, resultId).catch(() => {
         // Queue for retry on next page load
         const queue = JSON.parse(localStorage.getItem('db-save-queue') || '[]');
         queue.push({
+          resultId,
           userId,
           result,
           testDate: new Date().toISOString(),
@@ -261,7 +260,7 @@ export default function QuestionPage() {
   }, [answers, questionId, router]);
 
   // ── DB Save function with proper error handling ────────────────────────────
-  async function saveToDatabase(userId: string, result: ReturnType<typeof calculateMBTI>) {
+  async function saveToDatabase(userId: string, result: ReturnType<typeof calculateMBTI>, resultId: string) {
     // Load user data from localStorage for name/gender
     const userDataRaw = localStorage.getItem('user-data');
     const userData = userDataRaw ? JSON.parse(userDataRaw) : {};
@@ -282,14 +281,11 @@ export default function QuestionPage() {
       const err = await userResponse.text();
       throw new Error(`User upsert failed: ${err}`);
     }
-    console.log('✅ User upserted to DB');
-
-    // Step B: Save test result
     const resultResponse = await fetch('/api/results', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        id: crypto.randomUUID(),
+        id: resultId,
         userId,
         mbtiType: result.type,
         variant: result.variant,
@@ -306,8 +302,6 @@ export default function QuestionPage() {
       const err = await resultResponse.text();
       throw new Error(`Result save failed: ${err}`);
     }
-    console.log('✅ Test result saved to NeonDB');
-
     // Mark as synced
     localStorage.setItem('db-synced', 'true');
     localStorage.setItem('db-synced-at', new Date().toISOString());
