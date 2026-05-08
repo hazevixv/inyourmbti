@@ -425,9 +425,9 @@ export default function ComprehensiveResultsPage() {
                 </div>
               </div>
 
-              <div className="flex flex-col justify-center">
-                <div className="rounded-[1.75rem] bg-white/72 border border-white/70 p-4 sm:p-5 lg:p-6 shadow-lg min-h-full">
-                  <div className="flex flex-col gap-5">
+              <div className="flex flex-col self-stretch">
+                <div className="rounded-[1.75rem] bg-white/72 border border-white/70 p-4 sm:p-5 lg:p-6 shadow-lg h-full flex flex-col">
+                  <div className="flex flex-col gap-5 flex-1">
                     <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
                       <div className="flex flex-wrap items-center gap-3">
                         <div className="inline-flex px-4 py-2 rounded-2xl bg-gradient-to-br from-sky-400 to-teal-400 text-white font-black text-2xl md:text-[1.7rem] shadow-xl">
