@@ -4,8 +4,8 @@ import "./design-system-v3.css";
 
 export const metadata: Metadata = {
   title: "inyourmbti - Temukan Kepribadian Sejatimu",
-  description: "Platform tes MBTI yang akurat dan modern dengan AI psychologist. Temukan tipe kepribadianmu dan pahami dirimu lebih dalam.",
-  keywords: ["MBTI", "tes kepribadian", "personality test", "cognitive functions", "AI psychologist"],
+  description: "Kenali dirimu lebih dalam dengan tes MBTI berbasis sains. Temukan tipe kepribadianmu, pahami kekuatanmu, dan diskusikan hasilmu dengan AI psychologist.",
+  keywords: ["MBTI", "tes kepribadian", "personality test", "cognitive functions", "AI psychologist", "inyourmbti"],
   authors: [{ name: "INYOURMBTI Team" }],
   creator: "INYOURMBTI",
   publisher: "INYOURMBTI",
@@ -14,19 +14,28 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:2002'),
+  metadataBase: new URL('https://mbti.haze.biz.id'),
   openGraph: {
-    title: "INYOURMBTI - Temukan Kepribadian Sejatimu",
-    description: "Platform tes MBTI yang akurat dan modern dengan AI psychologist",
-    url: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:2002',
-    siteName: "INYOURMBTI",
+    title: "inyourmbti — Kenali Dirimu, Lebih Dalam 🧠",
+    description: "Tes MBTI berbasis sains dengan AI psychologist. Temukan tipe kepribadianmu & pahami kekuatanmu. Gratis!",
+    url: 'https://mbti.haze.biz.id',
+    siteName: "inyourmbti",
     locale: "id_ID",
     type: "website",
+    images: [
+      {
+        url: '/og-image',
+        width: 1200,
+        height: 630,
+        alt: 'inyourmbti - Temukan Kepribadian Sejatimu',
+      }
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "INYOURMBTI - Temukan Kepribadian Sejatimu",
-    description: "Platform tes MBTI yang akurat dan modern dengan AI psychologist",
+    title: "inyourmbti — Kenali Dirimu, Lebih Dalam 🧠",
+    description: "Tes MBTI berbasis sains dengan AI psychologist. Temukan tipe kepribadianmu & pahami kekuatanmu. Gratis!",
+    images: ['/og-image'],
   },
   robots: {
     index: true,
