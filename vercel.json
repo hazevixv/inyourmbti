@@ -4,15 +4,6 @@
   "installCommand": "npm install",
   "framework": "nextjs",
   "regions": ["sin1"],
-  "env": {
-    "GROQ_API_KEY": "@groq_api_key"
-  },
-  "build": {
-    "env": {
-      "NEXT_PUBLIC_APP_NAME": "Haze MBTI",
-      "NEXT_PUBLIC_APP_URL": "https://your-domain.vercel.app"
-    }
-  },
   "headers": [
     {
       "source": "/(.*)",
