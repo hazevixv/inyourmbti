@@ -1,7 +1,7 @@
 "use client";
 
 import { Brain, Clock, Target, CheckCircle, Sparkles, Zap, User, Heart, RefreshCw, BarChart2, Activity } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { memo, useDeferredValue, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { questions } from '@/lib/questions';
 import { useRouter } from 'next/navigation';
@@ -10,22 +10,68 @@ import type { MBTIResult } from '@/lib/mbti-calculator';
 
 // 3 user states
 type UserState = 'new' | 'resume' | 'completed';
+type UserFormData = { name: string; gender: string };
 
 const ALL_TYPES = ['INTJ','INTP','ENTJ','ENTP','INFJ','INFP','ENFJ','ENFP',
                    'ISTJ','ISFJ','ESTJ','ESFJ','ISTP','ISFP','ESTP','ESFP'];
 
+const WelcomeCharacterPanel = memo(function WelcomeCharacterPanel({
+  randomType,
+  charSrc,
+  genderLabel,
+  mobile = false,
+}: {
+  randomType: string;
+  charSrc: string;
+  genderLabel: string;
+  mobile?: boolean;
+}) {
+  if (mobile) {
+    return (
+      <div className="relative h-56 bg-gradient-to-b from-sky-200 via-sky-100 to-white overflow-hidden">
+        <div className="absolute inset-0 -top-6">
+          <Image src={charSrc} alt={`${randomType} ${genderLabel}`} fill
+            className="object-cover object-top transition-opacity duration-500" quality={75} />
+        </div>
+        <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white/90 to-transparent" />
+        <div className="absolute bottom-3 left-0 right-0 flex justify-center">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-sky-400 to-teal-400 text-white text-xs font-black shadow-lg">
+            <Brain className="w-3 h-3" />{randomType}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative flex-shrink-0 w-72 bg-gradient-to-b from-sky-200 via-sky-100 to-white overflow-hidden">
+      <div className="absolute inset-0 -top-8">
+        <Image src={charSrc} alt={`${randomType} ${genderLabel}`} fill
+          className="object-cover object-top transition-opacity duration-500" quality={75} />
+      </div>
+      <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-white/90 to-transparent pointer-events-none" />
+      <div className="absolute bottom-5 left-0 right-0 flex flex-col items-center gap-1">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-sky-400 to-teal-400 text-white text-xs font-black shadow-lg">
+          <Brain className="w-3 h-3" />{randomType}
+        </div>
+        <p className="text-xs text-navy-500 font-medium">{genderLabel}</p>
+      </div>
+    </div>
+  );
+});
+
 // ─── FORM MODAL — defined OUTSIDE component to prevent re-mount ───────────
 function WelcomeFormModal({
-  formData,
-  setFormData,
+  initialFormData,
+  onDraftChange,
   onSubmit,
   onClose,
   isLoading,
   canClose,
 }: {
-  formData: { name: string; gender: string };
-  setFormData: (d: { name: string; gender: string }) => void;
-  onSubmit: (e: React.FormEvent) => void;
+  initialFormData: UserFormData;
+  onDraftChange: (d: UserFormData) => void;
+  onSubmit: (data: UserFormData) => void;
   onClose: () => void;
   isLoading: boolean;
   canClose: boolean;
@@ -33,16 +79,56 @@ function WelcomeFormModal({
   const [randomType, setRandomType] = useState(() =>
     ALL_TYPES[Math.floor(Math.random() * ALL_TYPES.length)]
   );
+  const [draftFormData, setDraftFormData] = useState<UserFormData>(initialFormData);
+  const deferredName = useDeferredValue(draftFormData.name);
+  const isNameInputFocusedRef = useRef(false);
+  const isTypingRef = useRef(false);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Rotate character every 3s
   useEffect(() => {
     const id = setInterval(() => {
+      if (isNameInputFocusedRef.current || isTypingRef.current) return;
       setRandomType(ALL_TYPES[Math.floor(Math.random() * ALL_TYPES.length)]);
     }, 3000);
     return () => clearInterval(id);
   }, []);
 
-  const genderSuffix = formData.gender === 'female' ? 'Female' : 'Male';
+  useEffect(() => {
+    return () => {
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    setDraftFormData(initialFormData);
+  }, [initialFormData]);
+
+  const updateDraftFormData = (next: UserFormData) => {
+    setDraftFormData(next);
+    onDraftChange(next);
+  };
+
+  const pauseCharacterRotation = () => {
+    isTypingRef.current = true;
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+    typingTimeoutRef.current = setTimeout(() => {
+      isTypingRef.current = false;
+      typingTimeoutRef.current = null;
+    }, 1200);
+  };
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!draftFormData.name || !draftFormData.gender) return;
+    onSubmit(draftFormData);
+  };
+
+  const genderSuffix = draftFormData.gender === 'female' ? 'Female' : 'Male';
   const charSrc = `/img/png-character/${randomType}-${genderSuffix}.avif`;
 
   const genderOptions = [
@@ -51,11 +137,11 @@ function WelcomeFormModal({
   ];
 
   const FormContent = () => (
-    <form onSubmit={onSubmit} className="space-y-5 flex-1 flex flex-col justify-center">
+    <form onSubmit={handleFormSubmit} className="space-y-5 flex-1 flex flex-col justify-center">
       {/* Header */}
       <div>
         <h2 className="text-2xl font-black text-navy-900 mb-1">
-          {formData.name ? `Halo, ${formData.name}! 👋` : 'Welcome! 👋'}
+          {deferredName ? `Halo, ${deferredName}! 👋` : 'Welcome! 👋'}
         </h2>
         <p className="text-sm text-navy-500">
           Mari kenalan dulu sebelum memulai perjalananmu
@@ -70,8 +156,17 @@ function WelcomeFormModal({
         </label>
         <input
           type="text"
-          value={formData.name}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          value={draftFormData.name}
+          onChange={(e) => {
+            pauseCharacterRotation();
+            updateDraftFormData({ ...draftFormData, name: e.target.value });
+          }}
+          onFocus={() => {
+            isNameInputFocusedRef.current = true;
+          }}
+          onBlur={() => {
+            isNameInputFocusedRef.current = false;
+          }}
           placeholder="Masukkan nama kamu..."
           className="w-full px-4 py-3.5 rounded-xl border-2 border-navy-100 focus:border-sky-400 focus:outline-none transition-all bg-navy-50/50 text-navy-900 font-semibold placeholder:font-normal placeholder:text-navy-400 text-sm"
           autoFocus
@@ -87,10 +182,10 @@ function WelcomeFormModal({
         </label>
         <div className="grid grid-cols-2 gap-3">
           {genderOptions.map((opt) => {
-            const selected = formData.gender === opt.value;
+            const selected = draftFormData.gender === opt.value;
             return (
               <button key={opt.value} type="button"
-                onClick={() => setFormData({ ...formData, gender: opt.value })}
+                onClick={() => updateDraftFormData({ ...draftFormData, gender: opt.value })}
                 className={`relative flex items-center gap-3 px-4 py-4 rounded-2xl font-bold text-sm transition-all duration-200 ${
                   selected
                     ? `bg-gradient-to-br ${opt.gradient} text-white shadow-xl scale-[1.03] ring-2 ring-offset-2 ${opt.ring}`
@@ -125,7 +220,7 @@ function WelcomeFormModal({
 
       {/* CTA */}
       <button type="submit"
-        disabled={!formData.name || !formData.gender || isLoading}
+        disabled={!draftFormData.name || !draftFormData.gender || isLoading}
         className="w-full py-4 rounded-2xl font-black text-base text-white shadow-xl transition-all duration-200 hover:scale-[1.02] hover:shadow-2xl disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 bg-gradient-to-r from-teal-500 via-sky-500 to-indigo-500 flex items-center justify-center gap-2"
       >
         {isLoading
@@ -159,7 +254,12 @@ function WelcomeFormModal({
         <div className="absolute -inset-1 bg-gradient-to-r from-teal-400 via-sky-400 to-indigo-400 rounded-[2rem] opacity-50 blur-xl pointer-events-none" />
 
         {/* Left — Character panel */}
-        <div className="relative flex-shrink-0 w-72 bg-gradient-to-b from-sky-200 via-sky-100 to-white overflow-hidden">
+        <WelcomeCharacterPanel
+          randomType={randomType}
+          charSrc={charSrc}
+          genderLabel={draftFormData.gender === 'female' ? '👩 Female' : '👨 Male'}
+        />
+        {false && (<div className="relative flex-shrink-0 w-72 bg-gradient-to-b from-sky-200 via-sky-100 to-white overflow-hidden">
           <div className="absolute inset-0 -top-8">
             <Image src={charSrc} alt={`${randomType} ${genderSuffix}`} fill
               className="object-cover object-top transition-opacity duration-500" quality={75} />
@@ -170,10 +270,10 @@ function WelcomeFormModal({
               <Brain className="w-3 h-3" />{randomType}
             </div>
             <p className="text-xs text-navy-500 font-medium">
-              {formData.gender === 'female' ? '👩 Female' : '👨 Male'}
+              {draftFormData.gender === 'female' ? '👩 Female' : '👨 Male'}
             </p>
           </div>
-        </div>
+        </div>)}
 
         {/* Right — Form */}
         <div className="relative flex-1 bg-white/95 backdrop-blur-xl flex flex-col">
@@ -189,7 +289,13 @@ function WelcomeFormModal({
         <div className="absolute -inset-1 bg-gradient-to-r from-teal-400 via-sky-400 to-indigo-400 rounded-[2rem] opacity-40 blur-lg pointer-events-none" />
         <div className="relative bg-white/95 backdrop-blur-xl">
           {/* Character banner */}
-          <div className="relative h-56 bg-gradient-to-b from-sky-200 via-sky-100 to-white overflow-hidden">
+          <WelcomeCharacterPanel
+            randomType={randomType}
+            charSrc={charSrc}
+            genderLabel={draftFormData.gender === 'female' ? '👩 Female' : '👨 Male'}
+            mobile
+          />
+          {false && (<div className="relative h-56 bg-gradient-to-b from-sky-200 via-sky-100 to-white overflow-hidden">
             <div className="absolute inset-0 -top-6">
               <Image src={charSrc} alt={`${randomType} ${genderSuffix}`} fill
                 className="object-cover object-top transition-opacity duration-500" quality={75} />
@@ -200,7 +306,7 @@ function WelcomeFormModal({
                 <Brain className="w-3 h-3" />{randomType}
               </div>
             </div>
-          </div>
+          </div>)}
           {/* Form */}
           <div className="px-6 pt-4 pb-6 flex flex-col">
             <FormContent />
@@ -219,7 +325,7 @@ export default function TestStartPage() {
   const [answeredCount, setAnsweredCount] = useState(0);
   const [showForm, setShowForm] = useState(false);
   const [userData, setUserData] = useState({ name: '', gender: '' });
-  const [formData, setFormData] = useState({ name: '', gender: '' });
+  const formDraftRef = useRef<UserFormData>({ name: '', gender: '' });
   const [completedResult, setCompletedResult] = useState<MBTIResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -230,7 +336,7 @@ export default function TestStartPage() {
       try {
         const parsed = JSON.parse(saved);
         setUserData(parsed);
-        setFormData({ name: parsed.name || '', gender: parsed.gender || '' });
+        formDraftRef.current = { name: parsed.name || '', gender: parsed.gender || '' };
       } catch {}
     }
 
@@ -292,8 +398,7 @@ export default function TestStartPage() {
     router.push('/test/1');
   };
 
-  const handleSaveUserData = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSaveUserData = async (formData: UserFormData) => {
     if (!formData.name || !formData.gender) return;
     setIsLoading(true);
 
@@ -318,6 +423,7 @@ export default function TestStartPage() {
         onboardingComplete: true,
         createdAt: new Date().toISOString()
       };
+      formDraftRef.current = { name: formData.name, gender: formData.gender };
       localStorage.setItem('user-data', JSON.stringify(newUserData));
       setUserData(newUserData);  // ← update state immediately so card shows name/gender
       setShowForm(false);
@@ -704,8 +810,10 @@ export default function TestStartPage() {
       {/* Welcome Form Modal — shown for new users automatically */}
       {showForm && (
         <WelcomeFormModal
-          formData={formData}
-          setFormData={setFormData}
+          initialFormData={formDraftRef.current}
+          onDraftChange={(next) => {
+            formDraftRef.current = next;
+          }}
           onSubmit={handleSaveUserData}
           onClose={() => setShowForm(false)}
           isLoading={isLoading}
