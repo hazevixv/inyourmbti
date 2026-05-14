@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Brain, Heart, Briefcase, Users, TrendingUp, AlertCircle, CheckCircle, Sparkles, ArrowRight, Home, Layers } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import TopNav from '@/components/TopNav';
+import ReactMarkdown from 'react-markdown';
 
 // Generate metadata for SEO
 export async function generateMetadata({ params }: { params: Promise<{ code: string }> }) {
@@ -112,7 +113,7 @@ export default async function TypeDetailPage({ params }: { params: Promise<{ cod
                 <h1 className="text-3xl md:text-5xl font-black mb-3 text-navy-900">
                   {type.code} - {type.nickname}
                 </h1>
-                <p className="text-lg md:text-xl text-navy-600 mb-4">{type.tagline}</p>
+                 <p className="text-base md:text-xl text-navy-600 mb-4">{type.tagline}</p>
                 <div className="flex flex-wrap gap-2">
                   {[type.functionStack.dominant, type.functionStack.auxiliary, type.functionStack.tertiary, type.functionStack.inferior].map((func, i) => (
                     <Link
@@ -134,16 +135,15 @@ export default async function TypeDetailPage({ params }: { params: Promise<{ cod
               <Sparkles className="w-6 h-6 text-sky-500" />
               Overview
             </h2>
-            <p className="text-lg leading-relaxed text-navy-700">{type.overview}</p>
+             <p className="text-base md:text-lg leading-relaxed text-navy-700">{type.overview}</p>
           </section>
           
           {/* Deep Dive */}
           <section className="bg-white/80 backdrop-blur-sm rounded-3xl p-6 md:p-8 shadow-lg mb-6">
             <h2 className="text-2xl md:text-3xl font-bold mb-6 text-navy-800">Deep Dive</h2>
-            <div 
-              className="prose prose-lg max-w-none text-navy-700 leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: type.deepDive.replace(/\n/g, '<br/>') }} 
-            />
+            <div className="prose md:prose-lg max-w-none text-navy-700 leading-relaxed">
+              <ReactMarkdown>{type.deepDive}</ReactMarkdown>
+            </div>
           </section>
           
           {/* Function Stack Analysis */}
@@ -154,28 +154,28 @@ export default async function TypeDetailPage({ params }: { params: Promise<{ cod
             </h2>
             <div className="space-y-4">
               <div className="p-4 rounded-xl bg-gradient-to-r from-sky-50 to-teal-50 border-l-4 border-sky-500">
-                <h3 className="font-bold text-lg text-sky-700 mb-2">
+                 <h3 className="font-bold text-base md:text-lg text-sky-700 mb-2">
                   Dominant: {type.functionStack.dominant}
                 </h3>
                 <p className="text-navy-700">{type.functionStackAnalysis.dominant}</p>
               </div>
               <div className="p-4 rounded-xl bg-gradient-to-r from-teal-50 to-sky-50 border-l-4 border-teal-500">
-                <h3 className="font-bold text-lg text-teal-700 mb-2">
+                 <h3 className="font-bold text-base md:text-lg text-teal-700 mb-2">
                   Auxiliary: {type.functionStack.auxiliary}
                 </h3>
-                <p className="text-navy-700">{type.functionStackAnalysis.auxiliary}</p>
+                <p className="text-navy-700 text-sm md:text-base">{type.functionStackAnalysis.auxiliary}</p>
               </div>
               <div className="p-4 rounded-xl bg-gradient-to-r from-navy-50 to-sky-50 border-l-4 border-navy-500">
-                <h3 className="font-bold text-lg text-navy-700 mb-2">
+                <h3 className="font-bold text-base md:text-lg text-navy-700 mb-2">
                   Tertiary: {type.functionStack.tertiary}
                 </h3>
-                <p className="text-navy-700">{type.functionStackAnalysis.tertiary}</p>
+                <p className="text-navy-700 text-sm md:text-base">{type.functionStackAnalysis.tertiary}</p>
               </div>
               <div className="p-4 rounded-xl bg-gradient-to-r from-beige-50 to-navy-50 border-l-4 border-beige-500">
-                <h3 className="font-bold text-lg text-beige-700 mb-2">
+                <h3 className="font-bold text-base md:text-lg text-beige-700 mb-2">
                   Inferior: {type.functionStack.inferior}
                 </h3>
-                <p className="text-navy-700">{type.functionStackAnalysis.inferior}</p>
+                <p className="text-navy-700 text-sm md:text-base">{type.functionStackAnalysis.inferior}</p>
               </div>
             </div>
           </section>
@@ -236,7 +236,7 @@ export default async function TypeDetailPage({ params }: { params: Promise<{ cod
             </h2>
             <div className="space-y-6">
               <div>
-                <h3 className="font-bold text-lg text-navy-800 mb-3">As a Friend</h3>
+                 <h3 className="font-bold text-base md:text-lg text-navy-800 mb-3">As a Friend</h3>
                 <ul className="space-y-2">
                   {type.asFriend.map((trait, i) => (
                     <li key={i} className="flex items-start gap-2 text-navy-700">
@@ -247,7 +247,7 @@ export default async function TypeDetailPage({ params }: { params: Promise<{ cod
                 </ul>
               </div>
               <div>
-                <h3 className="font-bold text-lg text-navy-800 mb-3">As a Partner</h3>
+                 <h3 className="font-bold text-base md:text-lg text-navy-800 mb-3">As a Partner</h3>
                 <ul className="space-y-2">
                   {type.asPartner.map((trait, i) => (
                     <li key={i} className="flex items-start gap-2 text-navy-700">
@@ -258,7 +258,7 @@ export default async function TypeDetailPage({ params }: { params: Promise<{ cod
                 </ul>
               </div>
               <div>
-                <h3 className="font-bold text-lg text-navy-800 mb-3">As a Parent</h3>
+                 <h3 className="font-bold text-base md:text-lg text-navy-800 mb-3">As a Parent</h3>
                 <ul className="space-y-2">
                   {type.asParent.map((trait, i) => (
                     <li key={i} className="flex items-start gap-2 text-navy-700">
@@ -279,7 +279,7 @@ export default async function TypeDetailPage({ params }: { params: Promise<{ cod
             </h2>
             <div className="space-y-4">
               <div>
-                <h3 className="font-bold text-lg text-green-700 mb-3">Best Matches</h3>
+                 <h3 className="font-bold text-base md:text-lg text-green-700 mb-3">Best Matches</h3>
                 <div className="flex flex-wrap gap-2">
                   {compatibleTypes.best.map((compatType) => (
                     <Link
@@ -293,7 +293,7 @@ export default async function TypeDetailPage({ params }: { params: Promise<{ cod
                 </div>
               </div>
               <div>
-                <h3 className="font-bold text-lg text-blue-700 mb-3">Good Matches</h3>
+                 <h3 className="font-bold text-base md:text-lg text-blue-700 mb-3">Good Matches</h3>
                 <div className="flex flex-wrap gap-2">
                   {compatibleTypes.good.map((compatType) => (
                     <Link
@@ -307,7 +307,7 @@ export default async function TypeDetailPage({ params }: { params: Promise<{ cod
                 </div>
               </div>
               <div>
-                <h3 className="font-bold text-lg text-orange-700 mb-3">Challenging Matches</h3>
+                 <h3 className="font-bold text-base md:text-lg text-orange-700 mb-3">Challenging Matches</h3>
                 <div className="flex flex-wrap gap-2">
                   {compatibleTypes.challenging.map((compatType) => (
                     <Link
@@ -320,7 +320,9 @@ export default async function TypeDetailPage({ params }: { params: Promise<{ cod
                   ))}
                 </div>
               </div>
-              <p className="text-navy-700 mt-4">{type.compatibility.explanation}</p>
+               <div className="prose prose-sm md:prose-base text-navy-700 mt-4">
+                <ReactMarkdown>{type.compatibility.explanation}</ReactMarkdown>
+               </div>
             </div>
           </section>
           

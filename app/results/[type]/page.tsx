@@ -17,6 +17,9 @@ import { getLoveLanguageForMBTI } from '@/lib/love-languages';
 import { getTopCompatibleTypes } from '@/lib/compatibility';
 import { FunctionDetailModal, VariantDetailModal } from '@/components/FunctionDetailModal';
 import TopNav from '@/components/TopNav';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import ResultPDF from '@/components/ResultPDF';
 
 const VALID_MBTI_TYPES = ['INTJ', 'INTP', 'ENTJ', 'ENTP', 'INFJ', 'INFP', 'ENFJ', 'ENFP', 'ISTJ', 'ISFJ', 'ESTJ', 'ESFJ', 'ISTP', 'ISFP', 'ESTP', 'ESFP'] as const;
 
@@ -227,7 +230,7 @@ export default function ComprehensiveResultsPage() {
       }
     };
 
-    // Run retry after a short delay to not block page render
+      // Run retry after a short delay to not block page render
     const timer = setTimeout(processRetryQueue, 2000);
     return () => clearTimeout(timer);
   }, []);
@@ -242,8 +245,17 @@ export default function ComprehensiveResultsPage() {
   };
 
   const handleDownloadPdf = () => {
-    if (typeof window !== 'undefined') {
-      window.print();
+    const pdfElement = document.getElementById('pdf-content');
+    if (pdfElement) {
+      html2canvas(pdfElement).then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF();
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        pdf.save(`inyourmbti-result-${result?.variant}.pdf`);
+      });
     }
   };
 
@@ -430,7 +442,7 @@ export default function ComprehensiveResultsPage() {
                   <div className="flex flex-col gap-5 flex-1">
                     <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
                       <div className="flex flex-wrap items-center gap-3">
-                        <div className="inline-flex px-4 py-2 rounded-2xl bg-gradient-to-br from-sky-400 to-teal-400 text-white font-black text-2xl md:text-[1.7rem] shadow-xl">
+                         <div className="inline-flex px-3 py-1.5 md:px-4 md:py-2 rounded-xl md:rounded-2xl bg-gradient-to-br from-sky-400 to-teal-400 text-white font-black text-xl md:text-2xl shadow-xl">
                           {result.variant}
                         </div>
                         {typeData && (
@@ -480,11 +492,11 @@ export default function ComprehensiveResultsPage() {
                         Hasil Tes Kepribadianmu
                       </p>
 
-                      <h1 className="text-[2rem] md:text-[2.45rem] lg:text-[2.65rem] font-bold text-navy-800 leading-[1.08] max-w-3xl">
-                        {typeData?.description || result.description.split(' - ')[1]?.split('.')[0] || result.type}
-                      </h1>
-
-                      <p className="text-navy-600 leading-relaxed text-base md:text-[1.075rem] max-w-3xl">
+                       <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-navy-800 leading-tight max-w-3xl">
+                         {typeData?.description || result.description.split(' - ')[1]?.split('.')[0] || result.type}
+                       </h1>
+ 
+                       <p className="text-navy-600 leading-relaxed text-sm md:text-base max-w-3xl">
                         {typeData?.overview || result.description}
                       </p>
 
@@ -613,7 +625,7 @@ export default function ComprehensiveResultsPage() {
                   <Activity className="w-6 h-6 text-teal-500" />
                   Cognitive Function Stack
                 </h2>
-                <div className="grid md:grid-cols-4 gap-4">
+                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {[
                     { func: result.dominantFunction, role: 'Dominant', color: 'from-sky-400 to-sky-500', desc: typeData?.cognitiveProfile?.dominant?.description || 'Your primary way of processing' },
                     { func: result.auxiliaryFunction, role: 'Auxiliary', color: 'from-teal-400 to-teal-500', desc: typeData?.cognitiveProfile?.auxiliary?.description || 'Your supporting function' },
@@ -621,15 +633,15 @@ export default function ComprehensiveResultsPage() {
                     { func: result.inferiorFunction, role: 'Inferior', color: 'from-beige-300 to-beige-400', desc: typeData?.cognitiveProfile?.inferior?.description || 'Your blind spot' },
                   ].map((item, index) => (
                     <div key={index} className="relative">
-                      <div className={`glass rounded-2xl p-6 text-center card-hover`}>
-                        <div className={`w-16 h-16 mx-auto rounded-full bg-gradient-to-br ${item.color} flex items-center justify-center mb-3 shadow-lg`}>
-                          <span className="text-2xl font-black text-white">{item.func}</span>
+                       <div className={`glass rounded-2xl p-4 text-center card-hover`}>
+                        <div className={`w-14 h-14 md:w-16 md:h-16 mx-auto rounded-full bg-gradient-to-br ${item.color} flex items-center justify-center mb-2 md:mb-3 shadow-lg`}>
+                          <span className="text-xl md:text-2xl font-black text-white">{item.func}</span>
                         </div>
                         <div className="text-xs font-bold text-navy-500 mb-1">{item.role}</div>
-                        <div className="text-2xl font-black text-navy-800 mb-2">
+                        <div className="text-xl md:text-2xl font-black text-navy-800 mb-2">
                           {result.percentages[item.func as keyof typeof result.percentages]}%
                         </div>
-                        <div className="text-xs text-navy-600 leading-relaxed">{item.desc}</div>
+                        <div className="text-[0.65rem] md:text-xs text-navy-600 leading-relaxed">{item.desc}</div>
                       </div>
                       {index < 3 && (
                         <div className="hidden md:block absolute top-1/2 -right-2 transform -translate-y-1/2 z-10">
@@ -1189,13 +1201,13 @@ export default function ComprehensiveResultsPage() {
                 <p className="text-navy-600 mb-6 leading-relaxed">
                   Berdasarkan cognitive functions dan preferences-mu, berikut adalah career paths yang cocok untuk {result.type}.
                 </p>
-                <div className="grid md:grid-cols-3 gap-3">
+                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   {(typeData?.careers || result.careers).map((career, index) => (
-                    <div key={index} className="p-4 rounded-xl glass text-center card-hover">
-                      <div className="w-12 h-12 mx-auto rounded-full bg-gradient-to-br from-sky-400 to-teal-400 flex items-center justify-center mb-3">
-                        <Award className="w-6 h-6 text-white" />
+                    <div key={index} className="p-3 md:p-4 rounded-xl glass text-center card-hover">
+                      <div className="w-10 h-10 md:w-12 md:h-12 mx-auto rounded-full bg-gradient-to-br from-sky-400 to-teal-400 flex items-center justify-center mb-2 md:mb-3">
+                        <Award className="w-5 h-5 md:w-6 md:h-6 text-white" />
                       </div>
-                      <div className="font-bold text-navy-800 text-sm">{career}</div>
+                      <div className="font-bold text-navy-800 text-xs md:text-sm">{career}</div>
                     </div>
                   ))}
                 </div>
@@ -1672,6 +1684,10 @@ export default function ComprehensiveResultsPage() {
           onClose={() => setShowVariantModal(false)}
         />
       )}
+      
+      <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
+        <ResultPDF result={result} userGender={userGender} />
+      </div>
     </main>
   );
 }

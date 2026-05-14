@@ -19,7 +19,7 @@ export default function AboutPage() {
           <h1 className="text-4xl md:text-5xl font-black text-navy-900 mb-4">
             Tentang <span className="bg-gradient-to-r from-teal-500 to-sky-500 bg-clip-text text-transparent">inyourmbti</span>
           </h1>
-          <p className="text-lg text-navy-600 max-w-2xl mx-auto leading-relaxed">
+           <p className="text-base md:text-lg text-navy-600 max-w-2xl mx-auto leading-relaxed">
             Platform tes kepribadian MBTI paling akurat di Indonesia dengan pendekatan sains kognitif dan AI
           </p>
         </div>
@@ -32,7 +32,7 @@ export default function AboutPage() {
               Apa itu inyourmbti?
             </h2>
             <div className="space-y-4 text-navy-700 leading-relaxed">
-              <p className="text-lg">
+              <p className="text-base md:text-lg">
                 <strong className="text-navy-900">inyourmbti</strong> adalah platform tes kepribadian MBTI (Myers-Briggs Type Indicator) berbasis web yang menggunakan pendekatan ilmiah melalui <strong>teori fungsi kognitif Grant/Brownsword</strong>. Kami tidak hanya memberikan hasil tipe kepribadian 4 huruf (seperti INTJ, ENFP, dll), tetapi juga analisis mendalam tentang bagaimana kamu memproses informasi, membuat keputusan, dan berinteraksi dengan dunia.
               </p>
               <p>
@@ -55,7 +55,7 @@ export default function AboutPage() {
                 <Target className="w-7 h-7 text-white" />
               </div>
               <h3 className="text-xl font-bold text-navy-900 mb-3">Akurasi Tinggi</h3>
-              <p className="text-navy-700 leading-relaxed">
+              <p className="text-sm md:text-base text-navy-700 leading-relaxed">
                 Menggunakan teori fungsi kognitif Grant/Brownsword yang lebih akurat daripada metode dikotomi tradisional. Setiap pertanyaan dirancang untuk mengukur fungsi kognitif spesifik dengan presisi tinggi.
               </p>
             </div>
@@ -66,7 +66,7 @@ export default function AboutPage() {
                 <Brain className="w-7 h-7 text-white" />
               </div>
               <h3 className="text-xl font-bold text-navy-900 mb-3">AI-Powered Analysis</h3>
-              <p className="text-navy-700 leading-relaxed">
+              <p className="text-sm md:text-base text-navy-700 leading-relaxed">
                 Setelah tes, kamu bisa chat dengan AI Psychologist kami (powered by Groq AI) untuk mendapatkan insights personal, tips pengembangan diri, dan menjawab pertanyaan spesifik tentang tipe kepribadianmu.
               </p>
             </div>
@@ -77,7 +77,7 @@ export default function AboutPage() {
                 <BookOpen className="w-7 h-7 text-white" />
               </div>
               <h3 className="text-xl font-bold text-navy-900 mb-3">Konten Edukatif Lengkap</h3>
-              <p className="text-navy-700 leading-relaxed">
+              <p className="text-sm md:text-base text-navy-700 leading-relaxed">
                 Lebih dari 88,000+ kata konten edukatif tentang 16 tipe kepribadian, 8 fungsi kognitif, compatibility analysis, career paths, dan relationship insights. Setiap tipe memiliki panduan 5,500+ kata.
               </p>
             </div>
@@ -88,7 +88,7 @@ export default function AboutPage() {
                 <Shield className="w-7 h-7 text-white" />
               </div>
               <h3 className="text-xl font-bold text-navy-900 mb-3">Privacy First</h3>
-              <p className="text-navy-700 leading-relaxed">
+              <p className="text-sm md:text-base text-navy-700 leading-relaxed">
                 Data tesmu tersimpan lokal di perangkatmu dan di database kami yang aman. Tidak ada tracking pihak ketiga, tidak ada iklan, dan tidak ada penjualan data. Privasi dan keamanan datamu adalah prioritas utama.
               </p>
             </div>
@@ -112,7 +112,7 @@ export default function AboutPage() {
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-navy-900 mb-2">Tes Kepribadian (96 Pertanyaan)</h3>
-                  <p className="text-navy-700 leading-relaxed">
+                  <p className="text-sm md:text-base text-navy-700 leading-relaxed">
                     Kamu akan menjawab 96 pertanyaan yang dirancang untuk mengukur kekuatan 8 fungsi kognitif: <strong>Ni, Ne, Si, Se, Ti, Te, Fi, Fe</strong>. Setiap pertanyaan memiliki skala 1-5 (Sangat Tidak Setuju hingga Sangat Setuju). Waktu pengerjaan rata-rata 15 menit.
                   </p>
                 </div>
@@ -125,7 +125,7 @@ export default function AboutPage() {
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-navy-900 mb-2">Kalkulasi Function Stack</h3>
-                  <p className="text-navy-700 leading-relaxed">
+                  <p className="text-sm md:text-base text-navy-700 leading-relaxed">
                     Sistem kami menghitung skor setiap fungsi kognitif dan menentukan <strong>function stack</strong> kamu (Dominant, Auxiliary, Tertiary, Inferior). Ini adalah urutan fungsi yang paling kamu gunakan dalam kehidupan sehari-hari.
                   </p>
                 </div>
@@ -138,7 +138,7 @@ export default function AboutPage() {
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-navy-900 mb-2">Hasil Tipe MBTI + Variant</h3>
-                  <p className="text-navy-700 leading-relaxed">
+                  <p className="text-sm md:text-base text-navy-700 leading-relaxed">
                     Kamu mendapatkan tipe MBTI 4 huruf (contoh: INTJ) plus variant A (Assertive) atau T (Turbulent) yang menunjukkan tingkat confidence dan stress management kamu. Contoh: <strong>INTJ-A</strong> atau <strong>ENFP-T</strong>.
                   </p>
                 </div>
@@ -151,7 +151,7 @@ export default function AboutPage() {
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-navy-900 mb-2">Analisis Komprehensif</h3>
-                  <p className="text-navy-700 leading-relaxed">
+                  <p className="text-sm md:text-base text-navy-700 leading-relaxed">
                     Halaman hasil menampilkan: personality dimensions, cognitive function stack, strengths & weaknesses, career paths, relationship insights, communication style, growth areas, dan integrasi dengan Enneagram & Love Languages.
                   </p>
                 </div>
@@ -164,7 +164,7 @@ export default function AboutPage() {
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-navy-900 mb-2">Chat dengan AI Psychologist</h3>
-                  <p className="text-navy-700 leading-relaxed">
+                  <p className="text-sm md:text-base text-navy-700 leading-relaxed">
                     Setelah tes, kamu bisa chat dengan AI untuk bertanya apapun tentang tipe kepribadianmu, mendapatkan tips personal growth, career advice, relationship guidance, dan memahami cognitive functions lebih dalam.
                   </p>
                 </div>
@@ -316,7 +316,7 @@ export default function AboutPage() {
               <Heart className="w-8 h-8 text-red-500" />
               Misi Kami
             </h2>
-            <p className="text-lg text-navy-700 leading-relaxed text-center max-w-3xl mx-auto">
+             <p className="text-base md:text-lg text-navy-700 leading-relaxed text-center max-w-3xl mx-auto">
               Misi kami adalah <strong>membantu setiap orang memahami diri mereka lebih dalam</strong> melalui sains kepribadian yang akurat dan accessible. Kami percaya bahwa dengan memahami cognitive functions dan personality type, seseorang bisa:
             </p>
             <div className="grid md:grid-cols-3 gap-6 mt-8">

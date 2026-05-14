@@ -86,7 +86,7 @@ export function FunctionDetailModal({ functionCode, isOpen, onClose }: FunctionD
             <div className="space-y-4">
               <h3 className="text-xl font-bold text-navy-800">Ringkasan Singkat</h3>
               <div className="p-6 rounded-2xl bg-gradient-to-br from-sky-50 to-teal-50 border-2 border-sky-200">
-                <p className="text-lg text-navy-700 leading-relaxed font-medium">
+                 <p className="text-base md:text-lg text-navy-700 leading-relaxed font-medium">
                   {functionDetail.summary}
                 </p>
               </div>

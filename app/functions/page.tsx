@@ -75,7 +75,7 @@ export default function FunctionsPage() {
           <h1 className="text-4xl md:text-6xl font-black mb-4 text-navy-900">
             Cognitive Functions
           </h1>
-          <p className="text-lg md:text-xl text-navy-600 max-w-3xl mx-auto">
+           <p className="text-base md:text-lg text-navy-600 max-w-3xl mx-auto">
             Understand the 8 cognitive functions that shape how you perceive and interact with the world. 
             Each personality type uses these functions in a unique order.
           </p>
@@ -87,7 +87,7 @@ export default function FunctionsPage() {
             <Sparkles className="w-7 h-7 text-sky-500" />
             What Are Cognitive Functions?
           </h2>
-          <div className="prose prose-lg max-w-none text-navy-700">
+           <div className="prose prose-base md:prose-lg max-w-none text-navy-700">
             <p className="mb-4">
               Cognitive functions are the mental processes that determine how you take in information and make decisions. 
               Think of them as the "operating system" of your personality. Each of the 16 MBTI types uses all 8 functions, 
@@ -115,7 +115,7 @@ export default function FunctionsPage() {
             </div>
             <div>
               <h2 className="text-3xl font-bold text-navy-900">Intuition Functions</h2>
-              <p className="text-navy-600">Perceiving patterns, possibilities, and meanings</p>
+               <p className="text-sm md:text-base text-navy-600">Perceiving patterns, possibilities, and meanings</p>
             </div>
           </div>
           <div className="grid md:grid-cols-2 gap-6">
@@ -133,7 +133,7 @@ export default function FunctionsPage() {
             </div>
             <div>
               <h2 className="text-3xl font-bold text-navy-900">Sensing Functions</h2>
-              <p className="text-navy-600">Perceiving concrete details and sensory information</p>
+               <p className="text-sm md:text-base text-navy-600">Perceiving concrete details and sensory information</p>
             </div>
           </div>
           <div className="grid md:grid-cols-2 gap-6">
@@ -151,7 +151,7 @@ export default function FunctionsPage() {
             </div>
             <div>
               <h2 className="text-3xl font-bold text-navy-900">Thinking Functions</h2>
-              <p className="text-navy-600">Making logical, objective decisions</p>
+               <p className="text-sm md:text-base text-navy-600">Making logical, objective decisions</p>
             </div>
           </div>
           <div className="grid md:grid-cols-2 gap-6">
@@ -169,7 +169,7 @@ export default function FunctionsPage() {
             </div>
             <div>
               <h2 className="text-3xl font-bold text-navy-900">Feeling Functions</h2>
-              <p className="text-navy-600">Making value-based, people-centered decisions</p>
+               <p className="text-sm md:text-base text-navy-600">Making value-based, people-centered decisions</p>
             </div>
           </div>
           <div className="grid md:grid-cols-2 gap-6">
@@ -185,7 +185,7 @@ export default function FunctionsPage() {
             <Database className="w-7 h-7 text-teal-500" />
             Your Function Stack
           </h2>
-          <div className="prose prose-lg max-w-none text-navy-700">
+           <div className="prose prose-base md:prose-lg max-w-none text-navy-700">
             <p className="mb-4">
               Every personality type has a "function stack" - the order in which they prefer to use these 8 functions:
             </p>

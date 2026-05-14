@@ -250,7 +250,7 @@ export default function HomePage() {
           <div className="max-w-6xl mx-auto text-center">
             
             {/* 🎮 MAIN HEADLINE - Smaller, balanced */}
-            <h1 className="font-display font-bold text-4xl md:text-5xl lg:text-6xl mb-5 leading-tight tracking-tight max-w-4xl mx-auto">
+             <h1 className="font-display font-bold text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-5 leading-tight tracking-tight max-w-4xl mx-auto">
               <span className="text-frosted-900">Kenali dirimu, </span>
               <span className="bg-gradient-to-r from-teal-500 via-sky-500 to-indigo-500 bg-clip-text text-transparent">lebih dalam.</span>
             </h1>
@@ -309,10 +309,10 @@ export default function HomePage() {
                   </div>
 
                   {/* Suggested Prompts */}
-                  <div className="mt-3 flex flex-wrap gap-2">
+                   <div className="mt-3 flex flex-nowrap gap-2">
                     <button 
                       onClick={() => handleSuggestedPrompt('Apa tipe kepribadianku?')}
-                      className="px-3 py-1.5 rounded-lg bg-frosted-50/80 hover:bg-frosted-100 border border-frosted-200/50 text-frosted-600 text-xs font-body transition-colors flex items-center gap-1.5"
+                      className="px-2.5 py-1.5 rounded-lg bg-frosted-50/80 hover:bg-frosted-100 border border-frosted-200/50 text-frosted-600 text-xs font-body transition-colors flex items-center gap-1.5 whitespace-nowrap"
                     >
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -321,7 +321,7 @@ export default function HomePage() {
                     </button>
                     <button 
                       onClick={() => handleSuggestedPrompt('Apa itu test inyourmbti?')}
-                      className="px-3 py-1.5 rounded-lg bg-frosted-50/80 hover:bg-frosted-100 border border-frosted-200/50 text-frosted-600 text-xs font-body transition-colors flex items-center gap-1.5"
+                      className="px-2.5 py-1.5 rounded-lg bg-frosted-50/80 hover:bg-frosted-100 border border-frosted-200/50 text-frosted-600 text-xs font-body transition-colors flex items-center gap-1.5 whitespace-nowrap"
                     >
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />

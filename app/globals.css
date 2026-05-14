@@ -476,3 +476,27 @@ textarea:focus-visible {
   0%   { opacity: 0; transform: scale(0.7) translateY(20px); }
   100% { opacity: 1; transform: scale(1) translateY(0); }
 }
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #pdf-content, #pdf-content * {
+    visibility: visible;
+  }
+  #pdf-content {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+}
+
+/* ============================================
+   RESPONSIVE TYPOGRAPHY - Smart Scaling
+   ============================================ */
+@media (max-width: 768px) {
+  html {
+    /* Reduce base font size on mobile for better readability */
+    font-size: 15px;
+  }
+}

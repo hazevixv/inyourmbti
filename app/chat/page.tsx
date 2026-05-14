@@ -472,32 +472,7 @@ export default function ChatPage() {
 
       {/* Mobile View - PWA App Style */}
       <main className="md:hidden min-h-screen flex flex-col bg-gradient-to-br from-sky-50 via-white to-teal-50 pt-[68px]">
-        {/* Header */}
-        <header className="bg-white/80 backdrop-blur-xl border-b border-navy-200/20 sticky top-0 z-10 px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-400 to-teal-400 flex items-center justify-center shadow-lg">
-                <Brain className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <div className="font-bold text-navy-800 text-sm">AI Psychologist</div>
-                <div className="text-xs text-navy-600">Analisis Mendalam & Personal</div>
-              </div>
-            </div>
-            {result ? (
-              <div className="px-3 py-1 rounded-full bg-gradient-to-r from-sky-400 to-teal-400 text-white text-xs font-bold shadow-lg">
-                {result.variant}
-              </div>
-            ) : (
-              <button
-                onClick={() => router.push('/test')}
-                className="px-3 py-1 rounded-full bg-gradient-to-r from-teal-400 to-sky-400 text-white text-xs font-bold shadow-lg hover:shadow-xl transition-all"
-              >
-                Mulai Tes
-              </button>
-            )}
-          </div>
-        </header>
+
 
         {/* Messages */}
         <div className="flex-1 overflow-y-auto px-4 py-4">
@@ -507,8 +482,8 @@ export default function ChatPage() {
               key={index}
               className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} animate-slide-in-up`}
             >
-              <div
-                className={`max-w-[80%] p-4 rounded-2xl ${
+               <div
+                className={`max-w-[80%] p-3 rounded-2xl ${
                   message.role === 'user'
                     ? 'bg-gradient-to-br from-sky-400 to-teal-400 text-white shadow-lg'
                     : 'glass text-navy-800'
@@ -546,12 +521,12 @@ export default function ChatPage() {
         </div>
 
         {/* Input */}
-        <div className="bg-white/80 backdrop-blur-xl border-t border-navy-200/20 sticky bottom-20 px-4 py-4">
+        <div className="bg-white/80 backdrop-blur-xl border-t border-navy-200/20 sticky bottom-0 px-3 py-3">
           <div className="flex gap-2">
             <button
               onClick={handleVoiceInput}
               disabled={isLoading}
-              className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
+              className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
                 isRecording
                   ? 'bg-red-500 hover:bg-red-600 animate-pulse'
                   : 'bg-navy-100 hover:bg-navy-200'
@@ -567,14 +542,14 @@ export default function ChatPage() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Tanyakan tentang kepribadianmu..."
+              placeholder="Tanyakan..."
               disabled={isLoading}
-              className="flex-1 px-4 py-3 rounded-full bg-white border border-navy-200 focus:outline-none focus:ring-2 focus:ring-sky-400 text-navy-800 placeholder-navy-400 shadow-sm"
+              className="flex-1 px-4 py-2 rounded-full bg-white border border-navy-200 focus:outline-none focus:ring-2 focus:ring-sky-400 text-navy-800 placeholder-navy-400 shadow-sm"
             />
             <button
               onClick={handleSend}
               disabled={!input.trim() || isLoading}
-              className="w-12 h-12 rounded-full bg-gradient-to-br from-sky-400 to-teal-400 text-white flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed shadow-lg active:scale-95 transition-transform"
+              className="w-10 h-10 rounded-full bg-gradient-to-br from-sky-400 to-teal-400 text-white flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed shadow-lg active:scale-95 transition-transform"
             >
               <Send className="w-5 h-5" />
             </button>
@@ -734,7 +709,7 @@ export default function ChatPage() {
                             <span className="text-xs font-medium text-navy-600">AI Psychologist</span>
                           </div>
                         )}
-                        <div className="prose prose-sm max-w-none prose-p:my-2 prose-ul:my-2 prose-li:my-1">
+                        <div className="prose prose-sm max-w-none prose-p:my-2 prose-ul:my-2 prose-li:my-1 [&_p]:text-sm [&_li]:text-sm">
                           <ReactMarkdown>
                             {message.content}
                           </ReactMarkdown>

@@ -112,7 +112,7 @@ export default async function FunctionDetailPage({ params }: { params: Promise<{
               <Sparkles className="w-6 h-6 text-sky-500" />
               Quick Summary
             </h2>
-            <p className="text-lg leading-relaxed text-navy-700">{func.summary}</p>
+             <p className="text-base md:text-lg leading-relaxed text-navy-700">{func.summary}</p>
           </section>
         )}
         

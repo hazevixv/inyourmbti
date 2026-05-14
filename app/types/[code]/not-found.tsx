@@ -10,7 +10,7 @@ export default function TypeNotFound() {
         </div>
         
         <h1 className="text-4xl font-black mb-4 text-navy-900">Type Not Found</h1>
-        <p className="text-lg text-navy-600 mb-8">
+         <p className="text-base md:text-lg text-navy-600 mb-8">
           The personality type you're looking for doesn't exist. Please check the URL and try again.
         </p>
         

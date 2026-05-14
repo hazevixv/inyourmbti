@@ -2,7 +2,72 @@
 // Comprehensive compatibility analysis untuk all 256 type combinations
 // Based on function stack dynamics, cognitive preferences, and relationship research
 
-import { PersonalityCode } from '../types';
+import { PersonalityCode, getPersonalityType } from '../types';
+
+// Helper function to calculate compatibility score dynamically
+function calculateDynamicCompatibility(type1: PersonalityCode, type2: PersonalityCode): CompatibilityDetail {
+  const type1Data = getPersonalityType(type1);
+  const type2Data = getPersonalityType(type2);
+
+  if (!type1Data || !type2Data) {
+    return {
+      level: 'challenging',
+      score: 40,
+      summary: 'Data for one or both types is unavailable.',
+      strengths: [],
+      challenges: ['Incomplete type data.'],
+      advice: 'Please select valid personality types.'
+    };
+  }
+
+  const stack1 = [type1Data.functionStack.dominant, type1Data.functionStack.auxiliary, type1Data.functionStack.tertiary, type1Data.functionStack.inferior];
+  const stack2 = [type2Data.functionStack.dominant, type2Data.functionStack.auxiliary, type2Data.functionStack.tertiary, type2Data.functionStack.inferior];
+
+  let score = 50; // Base score
+
+  // Compare stacks
+  stack1.forEach((func1, i) => {
+    stack2.forEach((func2, j) => {
+      if (func1 === func2) {
+        const positionWeight = 4 - Math.abs(i - j); // Higher score for similar positions
+        score += 10 + (positionWeight * 2);
+      }
+    });
+  });
+
+  // Bonus for shared temperament (NT, NF, SJ, SP)
+  if (type1Data.category === type2Data.category) {
+    score += 10;
+  }
+  
+  // Adjust for I/E difference
+  if (type1[0] !== type2[0]) {
+    score += 5; // Slight bonus for complementary perspectives
+  }
+
+  score = Math.min(Math.max(score, 30), 98); // Clamp score between 30 and 98
+
+  let level: CompatibilityLevel = 'challenging';
+  if (score >= 85) level = 'excellent';
+  else if (score >= 70) level = 'good';
+  else if (score >= 55) level = 'moderate';
+
+  return {
+    level,
+    score: Math.round(score),
+    summary: 'Analysis based on cognitive function dynamics.',
+    strengths: [
+      'Potential for mutual growth.',
+      'Learning from different perspectives.'
+    ],
+    challenges: [
+      'Differences in communication styles.',
+      'Varying priorities and values.'
+    ],
+    advice: 'Focus on open communication and appreciating each other\'s natural strengths to build a strong connection.'
+  };
+}
+
 
 export type CompatibilityLevel = 'excellent' | 'good' | 'moderate' | 'challenging';
 
@@ -609,29 +674,38 @@ export const COMPATIBILITY_MATRIX: Record<PersonalityCode, Record<PersonalityCod
   // Note: Due to length constraints, I'm providing a comprehensive template for INTJ and INTP.
   // The remaining 14 types would follow the same detailed pattern.
   // Each type would have 16 compatibility entries with detailed analysis.
-  
-  // Placeholder structure for remaining types:
-  ENTJ: {} as any,
-  ENTP: {} as any,
-  INFJ: {} as any,
-  INFP: {} as any,
-  ENFJ: {} as any,
-  ENFP: {} as any,
-  ISTJ: {} as any,
-  ISFJ: {} as any,
-  ESTJ: {} as any,
-  ESFJ: {} as any,
-  ISTP: {} as any,
-  ISFP: {} as any,
-  ESTP: {} as any,
-  ESFP: {} as any,
 };
+
+// Auto-fill the rest of the matrix by mirroring the defined relationships
+Object.keys(COMPATIBILITY_MATRIX).forEach(type1 => {
+  const personalityCode1 = type1 as PersonalityCode;
+  Object.keys((COMPATIBILITY_MATRIX as any)[personalityCode1]).forEach(type2 => {
+    const personalityCode2 = type2 as PersonalityCode;
+    if (!(COMPATIBILITY_MATRIX as any)[personalityCode2]) {
+      (COMPATIBILITY_MATRIX as any)[personalityCode2] = {};
+    }
+    if (!(COMPATIBILITY_MATRIX as any)[personalityCode2][personalityCode1]) {
+      (COMPATIBILITY_MATRIX as any)[personalityCode2][personalityCode1] = (COMPATIBILITY_MATRIX as any)[personalityCode1][personalityCode2];
+    }
+  });
+});
+
 
 /**
  * Get compatibility between two types
  */
 export function getCompatibility(type1: PersonalityCode, type2: PersonalityCode): CompatibilityDetail | undefined {
-  return COMPATIBILITY_MATRIX[type1]?.[type2];
+  const matrix = COMPATIBILITY_MATRIX as any;
+  // Check both directions in the matrix first
+  if (matrix[type1] && matrix[type1][type2] && Object.keys(matrix[type1][type2]).length > 0) {
+    return matrix[type1][type2];
+  }
+  if (matrix[type2] && matrix[type2][type1] && Object.keys(matrix[type2][type1]).length > 0) {
+    return matrix[type2][type1];
+  }
+  
+  // If not found, use the dynamic calculator as a fallback
+  return calculateDynamicCompatibility(type1, type2);
 }
 
 /**

@@ -59,35 +59,35 @@ export default function TypesListPage() {
         </nav>
         
         {/* Header */}
-        <header className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 md:p-10 shadow-xl mb-8 text-center">
-          <div className="w-20 h-20 md:w-24 md:h-24 rounded-3xl bg-gradient-to-br from-sky-400 to-teal-400 flex items-center justify-center shadow-2xl mx-auto mb-6">
-            <Brain className="w-10 h-10 md:w-12 md:h-12 text-white" />
+        <header className="bg-white/80 backdrop-blur-sm rounded-3xl p-6 md:p-10 shadow-xl mb-8 text-center">
+          <div className="w-16 h-16 md:w-24 md:h-24 rounded-3xl bg-gradient-to-br from-sky-400 to-teal-400 flex items-center justify-center shadow-2xl mx-auto mb-6">
+            <Brain className="w-8 h-8 md:w-12 md:h-12 text-white" />
           </div>
           <h1 className="text-3xl md:text-5xl font-black mb-4 text-navy-900">
             16 Personality Types
           </h1>
-          <p className="text-lg md:text-xl text-navy-600 max-w-3xl mx-auto mb-6">
+           <p className="text-base md:text-lg text-navy-600 max-w-3xl mx-auto mb-6">
             Explore all MBTI personality types in depth. Each type includes comprehensive analysis, 
             strengths, weaknesses, career paths, and relationship insights.
           </p>
           
           {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
-            <div className="bg-gradient-to-br from-sky-50 to-teal-50 rounded-2xl p-4 text-center">
-              <div className="text-3xl font-black text-sky-600">{stats.total}</div>
-              <div className="text-sm text-navy-600">Types</div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 max-w-3xl mx-auto">
+            <div className="bg-gradient-to-br from-sky-50 to-teal-50 rounded-2xl p-3 md:p-4 text-center">
+              <div className="text-2xl md:text-3xl font-black text-sky-600">{stats.total}</div>
+              <div className="text-xs md:text-sm text-navy-600">Types</div>
             </div>
-            <div className="bg-gradient-to-br from-teal-50 to-sky-50 rounded-2xl p-4 text-center">
-              <div className="text-3xl font-black text-teal-600">88k+</div>
-              <div className="text-sm text-navy-600">Words</div>
+            <div className="bg-gradient-to-br from-teal-50 to-sky-50 rounded-2xl p-3 md:p-4 text-center">
+              <div className="text-2xl md:text-3xl font-black text-teal-600">88k+</div>
+              <div className="text-xs md:text-sm text-navy-600">Words</div>
             </div>
-            <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-2xl p-4 text-center">
-              <div className="text-3xl font-black text-purple-600">5.5k+</div>
-              <div className="text-sm text-navy-600">Per Type</div>
+            <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-2xl p-3 md:p-4 text-center">
+              <div className="text-2xl md:text-3xl font-black text-purple-600">5.5k+</div>
+              <div className="text-xs md:text-sm text-navy-600">Per Type</div>
             </div>
-            <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-4 text-center">
-              <div className="text-3xl font-black text-blue-600">4</div>
-              <div className="text-sm text-navy-600">Categories</div>
+            <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-3 md:p-4 text-center">
+              <div className="text-2xl md:text-3xl font-black text-blue-600">4</div>
+              <div className="text-xs md:text-sm text-navy-600">Categories</div>
             </div>
           </div>
         </header>
@@ -96,16 +96,16 @@ export default function TypesListPage() {
         {Object.entries(TYPES_BY_CATEGORY).map(([category, types]) => (
           <section key={category} className="mb-12">
             {/* Category Header */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-6 md:p-8 shadow-lg mb-6">
+            <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-5 md:p-8 shadow-lg mb-6">
               <div className="flex items-center gap-4 mb-4">
-                <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${categoryColors[category as keyof typeof categoryColors]} flex items-center justify-center text-3xl shadow-lg`}>
+                <div className={`w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br ${categoryColors[category as keyof typeof categoryColors]} flex items-center justify-center text-3xl shadow-lg`}>
                   {categoryIcons[category as keyof typeof categoryIcons]}
                 </div>
                 <div className="flex-1">
-                  <h2 className="text-2xl md:text-3xl font-black text-navy-900 mb-1">
+                  <h2 className="text-xl md:text-3xl font-black text-navy-900 mb-1">
                     {category}s
                   </h2>
-                  <p className="text-navy-600">
+                   <p className="text-sm md:text-base text-navy-600">
                     {categoryDescriptions[category as keyof typeof categoryDescriptions]}
                   </p>
                 </div>
@@ -122,18 +122,18 @@ export default function TypesListPage() {
             </div>
             
             {/* Type Cards */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
               {Object.values(types).map(type => (
                 <Link 
                   key={type.code}
                   href={`/types/${type.code.toLowerCase()}`}
-                  className="group bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-2xl hover:scale-105 transition-all"
+                  className="group bg-white/80 backdrop-blur-sm rounded-2xl p-5 md:p-6 shadow-lg hover:shadow-2xl hover:scale-105 transition-all"
                 >
-                  <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${categoryColors[category as keyof typeof categoryColors]} flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition`}>
-                    <Brain className="w-7 h-7 text-white" />
+                  <div className={`w-12 h-12 md:w-14 md:h-14 rounded-xl bg-gradient-to-br ${categoryColors[category as keyof typeof categoryColors]} flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition`}>
+                    <Brain className="w-6 h-6 md:w-7 md:h-7 text-white" />
                   </div>
-                  <h3 className="text-2xl font-black text-navy-900 mb-2">{type.code}</h3>
-                  <p className="text-lg font-bold text-navy-700 mb-2">{type.nickname}</p>
+                  <h3 className="text-xl md:text-2xl font-black text-navy-900 mb-2">{type.code}</h3>
+                   <p className="text-base md:text-lg font-bold text-navy-700 mb-2">{type.nickname}</p>
                   <p className="text-sm text-navy-600 mb-4 line-clamp-2">{type.tagline}</p>
                   <div className="flex items-center gap-2 text-sky-600 font-semibold text-sm">
                     Learn More
