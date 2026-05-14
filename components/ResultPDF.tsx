@@ -15,6 +15,7 @@ const ResultPDF: React.FC<ResultPDFProps> = ({ result, userGender }) => {
 
   const typeData = getMBTITypeData(result.type);
   const characterSrc = `/img/png-character/${result.type}-${userGender === 'female' ? 'Female' : 'Male'}.avif`;
+  const summaryText = typeData?.description ?? typeData?.overview ?? '';
 
   return (
     <div id="pdf-content" className="p-10 bg-white" style={{ width: '210mm', minHeight: '297mm' }}>
@@ -24,7 +25,7 @@ const ResultPDF: React.FC<ResultPDFProps> = ({ result, userGender }) => {
       </div>
       
       <div className="text-center mb-8">
-        <p className="text-lg italic text-gray-700">"{typeData?.tagline}"</p>
+        <p className="text-lg italic text-gray-700">"{summaryText}"</p>
       </div>
 
       <div className="my-8 flex justify-center">
@@ -36,20 +37,20 @@ const ResultPDF: React.FC<ResultPDFProps> = ({ result, userGender }) => {
 
       <h2 className="text-3xl font-bold text-gray-800 border-b-2 pb-2 mt-10 mb-4">Cognitive Function Stack</h2>
       <div className="space-y-4">
-        <p><strong>Dominant:</strong> {result.dominantFunction} - {typeData?.functionStackAnalysis?.dominant}</p>
-        <p><strong>Auxiliary:</strong> {result.auxiliaryFunction} - {typeData?.functionStackAnalysis?.auxiliary}</p>
-        <p><strong>Tertiary:</strong> {result.tertiaryFunction} - {typeData?.functionStackAnalysis?.tertiary}</p>
-        <p><strong>Inferior:</strong> {result.inferiorFunction} - {typeData?.functionStackAnalysis?.inferior}</p>
+        <p><strong>Dominant:</strong> {result.dominantFunction} - {typeData?.cognitiveProfile?.dominant?.manifestation}</p>
+        <p><strong>Auxiliary:</strong> {result.auxiliaryFunction} - {typeData?.cognitiveProfile?.auxiliary?.manifestation}</p>
+        <p><strong>Tertiary:</strong> {result.tertiaryFunction} - {typeData?.cognitiveProfile?.tertiary?.manifestation}</p>
+        <p><strong>Inferior:</strong> {result.inferiorFunction} - {typeData?.cognitiveProfile?.inferior?.manifestation}</p>
       </div>
 
       <h2 className="text-3xl font-bold text-gray-800 border-b-2 pb-2 mt-10 mb-4">Strengths</h2>
       <ul className="list-disc list-inside space-y-2">
-        {typeData?.strengths?.map((s, index) => <li key={`strength-${index}`}>{s.title}: {s.description}</li>)}
+        {typeData?.strengths?.map((strength, index) => <li key={`strength-${index}`}>{strength}</li>)}
       </ul>
       
       <h2 className="text-3xl font-bold text-gray-800 border-b-2 pb-2 mt-10 mb-4">Career Recommendations</h2>
       <ul className="list-disc list-inside grid grid-cols-2 gap-x-8">
-        {typeData?.careerPaths?.map((c, index) => <li key={`career-${index}`}>{c.career}</li>)}
+        {typeData?.careers?.map((career, index) => <li key={`career-${index}`}>{career}</li>)}
       </ul>
 
       <div className="text-center mt-12 text-gray-500 text-sm">

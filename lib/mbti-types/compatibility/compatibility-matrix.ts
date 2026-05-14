@@ -81,7 +81,7 @@ export interface CompatibilityDetail {
 }
 
 // Compatibility Matrix - All 256 combinations
-export const COMPATIBILITY_MATRIX: Record<PersonalityCode, Record<PersonalityCode, CompatibilityDetail>> = {
+export const COMPATIBILITY_MATRIX: Partial<Record<PersonalityCode, Partial<Record<PersonalityCode, CompatibilityDetail>>>> = {
   
   // ============================================
   // INTJ COMPATIBILITY
