@@ -2,7 +2,7 @@
 // Comprehensive compatibility analysis untuk all 256 type combinations
 // Based on function stack dynamics, cognitive preferences, and relationship research
 
-import { PersonalityCode, getPersonalityType } from '../types';
+import { PersonalityCode, getPersonalityType } from '../';
 
 // Helper function to calculate compatibility score dynamically
 function calculateDynamicCompatibility(type1: PersonalityCode, type2: PersonalityCode): CompatibilityDetail {
