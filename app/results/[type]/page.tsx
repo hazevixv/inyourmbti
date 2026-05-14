@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import Link from 'next/link';
 import Image from 'next/image';
 import { 
-  ChevronLeft, RotateCcw, MessageCircle, TrendingUp, Target, Download,
+  RotateCcw, MessageCircle, TrendingUp, Target, Download,
   Brain, Heart, Briefcase, Users, Zap, Shield, AlertCircle, Star,
   BarChart3, PieChart, Activity, Award, BookOpen, Lightbulb, Sparkles,
   ArrowRight, CheckCircle, XCircle, TrendingDown, UserPlus, Smile, Frown
@@ -327,37 +326,6 @@ export default function ComprehensiveResultsPage() {
     <main className="min-h-screen pt-20">
       {/* Navigation */}
       <TopNav />
-
-      {/* Header */}
-      <header className="glass-dark border-b border-navy-200/20 sticky top-0 z-10 backdrop-blur-xl md:hidden">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link 
-              href="/"
-              className="flex items-center gap-2 text-navy-600 hover:text-navy-900 transition-colors"
-            >
-              <ChevronLeft className="w-5 h-5" />
-              <span className="font-medium">Home</span>
-            </Link>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => router.push(isViewOnly ? '/test' : '/chat')}
-                className="p-2 rounded-xl glass hover:scale-105 transition-transform"
-              >
-                <MessageCircle className="w-5 h-5 text-navy-600" />
-              </button>
-              {!isViewOnly && (
-                <button
-                  onClick={handleRetake}
-                  className="p-2 rounded-xl glass hover:scale-105 transition-transform"
-                >
-                  <RotateCcw className="w-5 h-5 text-navy-600" />
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
 
       {/* Content */}
       <div className="container mx-auto px-4 py-8">
